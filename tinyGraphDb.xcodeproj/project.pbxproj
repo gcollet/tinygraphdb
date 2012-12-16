@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		87990E231678DE2800A1A15F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87990E221678DE2800A1A15F /* main.cpp */; };
 		87990E251678DE2800A1A15F /* tinyGraphDb.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 87990E241678DE2800A1A15F /* tinyGraphDb.1 */; };
+		87990E2D1678DE8800A1A15F /* graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87990E2B1678DE8800A1A15F /* graph.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +29,8 @@
 		87990E1E1678DE2800A1A15F /* tinyGraphDb */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = tinyGraphDb; sourceTree = BUILT_PRODUCTS_DIR; };
 		87990E221678DE2800A1A15F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		87990E241678DE2800A1A15F /* tinyGraphDb.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = tinyGraphDb.1; sourceTree = "<group>"; };
+		87990E2B1678DE8800A1A15F /* graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graph.cpp; sourceTree = "<group>"; };
+		87990E2C1678DE8800A1A15F /* graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +65,8 @@
 			children = (
 				87990E221678DE2800A1A15F /* main.cpp */,
 				87990E241678DE2800A1A15F /* tinyGraphDb.1 */,
+				87990E2B1678DE8800A1A15F /* graph.cpp */,
+				87990E2C1678DE8800A1A15F /* graph.h */,
 			);
 			path = tinyGraphDb;
 			sourceTree = "<group>";
@@ -118,6 +123,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				87990E231678DE2800A1A15F /* main.cpp in Sources */,
+				87990E2D1678DE8800A1A15F /* graph.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,6 +186,7 @@
 		87990E291678DE2800A1A15F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -187,6 +194,7 @@
 		87990E2A1678DE2800A1A15F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
