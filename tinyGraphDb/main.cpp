@@ -30,6 +30,7 @@ int main(int argc, const char * argv[])
 	policy.addNodeType("data_id");
 	policy.addNodeType("name");
 	
+	
 	// A pathway contains reactions and entities
 	policy.addArcType("contains");
 	policy.addConstraint("pathway", "contains");
