@@ -1,9 +1,23 @@
-//
-//  main.cpp
-//  tinyGraphDb
-//
-//  Created by Guillaume Collet on 12/12/12.
-//
+/* Copyright (c) 2010 Guillaume Collet
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 
 #include <iostream>
 #include "graph.h"
@@ -13,9 +27,68 @@ int main(int argc, const char * argv[])
 	// Define the graph policy //
 	tinygraphdb::Policy policy;
 	
-	// Node types //
+	/*
+	 * Names 
+	 *
+	 * Names are used to identify biological data
+	 * One piece of data can have multiple names
+	 *
+	 * A name has only one property which is a string
+	 */
+	policy.addNodeType("name");
+	
+	
+	/*
+	 * Data source
+	 *
+	 * A piece of data has been integrated from one or many databases
+	 * The data_source node keeps information about the database
+	 * The data_id keeps the id of the piece of data in a given database
+	 */
+	policy.addNodeType("data_source");
+	policy.addNodeType("data_id");
+	
+	policy.addConstraint("data_id", "is in db", "data_source");
+	policy.addConstraint("data_source", "contains", "data_id");
+	
+	
+	/*
+	 * Organism
+	 */
+	policy.addNodeType("organism");
+	
+	// Organism has names
+	policy.addConstraint("organism", "has name", "name");
+	policy.addConstraint("name", "is name of", "organism");
+	
+	
+	/*
+	 * Pathway
+	 */
 	policy.addNodeType("pathway");
+	
+	// A pathway has names
+	policy.addConstraint("pathway", "has name", "name");
+	policy.addConstraint("name", "is name of", "pathway");
+	
+	// A pathway is referenced in data_sources through a data_id
+	policy.addConstraint("pathway", "has id", "data_id");
+	policy.addConstraint("data_id", "refers", "pathway");
+	
+	
+	/*
+	 * Reaction
+	 */
 	policy.addNodeType("reaction");
+	
+	// A reaction has names
+	policy.addConstraint("reaction", "has name", "name");
+	policy.addConstraint("name", "is name of", "reaction");
+	
+	// A reaction is referenced in data_sources through a data_id
+	policy.addConstraint("reaction", "has id", "data_id");
+	policy.addConstraint("data_id", "refers", "reaction");
+	
 	
 	// Entity nodes
 	policy.addNodeType("molecule");
@@ -24,62 +97,90 @@ int main(int argc, const char * argv[])
 	policy.addNodeType("dna");
 	policy.addNodeType("rna");
 	
-	// Misc data
-	policy.addNodeType("organism");
-	policy.addNodeType("data_source");
-	policy.addNodeType("data_id");
-	policy.addNodeType("name");
+	// A complex contains entities//
+	policy.addConstraint("complex", "contains", "molecule");
+	policy.addConstraint("complex", "contains", "protein");
+	policy.addConstraint("complex", "contains", "complex");
+	policy.addConstraint("complex", "contains", "dna");
+	policy.addConstraint("complex", "contains", "rna");
+	
+	policy.addConstraint("molecule", "is in complex", "complex");
+	policy.addConstraint("protein",  "is in complex", "complex");
+	policy.addConstraint("complex",  "is in complex", "complex");
+	policy.addConstraint("dna",      "is in complex", "complex");
+	policy.addConstraint("rna",      "is in complex", "complex");
+
+	// An organism contains reactions, pathways and entities
+	policy.addConstraint("organism", "contains", "molecule");
+	policy.addConstraint("organism", "contains", "protein");
+	policy.addConstraint("organism", "contains", "complex");
+	policy.addConstraint("organism", "contains", "dna");
+	policy.addConstraint("organism", "contains", "rna");
+	
+	policy.addConstraint("molecule", "is in organism", "organism");
+	policy.addConstraint("protein",  "is in organism", "organism");
+	policy.addConstraint("complex",  "is in organism", "organism");
+	policy.addConstraint("dna",      "is in organism", "organism");
+	policy.addConstraint("rna",      "is in organism", "organism");
+	
+	
 	
 	
 	// A pathway contains reactions and entities
-	policy.addArcType("contains");
-	policy.addConstraint("pathway", "contains");
-	policy.addConstraint("contains", "reaction");
-	policy.addConstraint("contains", "molecule");
-	policy.addConstraint("contains", "protein");
-	policy.addConstraint("contains", "complex");
-	policy.addConstraint("contains", "dna");
-	policy.addConstraint("contains", "rna");
-
-	// A reaction consumes entities //
-	policy.addArcType("consumes");
-	policy.addConstraint("reaction", "consumes");
-	policy.addConstraint("consumes", "molecule");
-	policy.addConstraint("consumes", "complex");
-	policy.addConstraint("consumes", "protein");
-	policy.addConstraint("consumes", "dna");
-	policy.addConstraint("consumes", "rna");
+	policy.addConstraint("pathway", "contains", "reaction");
+	policy.addConstraint("pathway", "contains", "molecule");
+	policy.addConstraint("pathway", "contains", "protein");
+	policy.addConstraint("pathway", "contains", "complex");
+	policy.addConstraint("pathway", "contains", "dna");
+	policy.addConstraint("pathway", "contains", "rna");
 	
-	policy.addArcType("is_consumed_by");
-	policy.addConstraint("is_consumed_by", "reaction");
-	policy.addConstraint("molecule", "is_consumed_by");
-	policy.addConstraint("complex", "is_consumed_by");
-	policy.addConstraint("protein", "is_consumed_by");
-	policy.addConstraint("dna", "is_consumed_by");
-	policy.addConstraint("rna", "is_consumed_by");
+	policy.addConstraint("reaction", "is in pathway", "pathway");
+	policy.addConstraint("pathway",  "is in pathway", "pathway");
+	policy.addConstraint("molecule", "is in pathway", "pathway");
+	policy.addConstraint("protein",  "is in pathway", "pathway");
+	policy.addConstraint("complex",  "is in pathway", "pathway");
+	policy.addConstraint("dna",      "is in pathway", "pathway");
+	policy.addConstraint("rna",      "is in pathway", "pathway");
+	
+	// A reaction consumes entities //
+	policy.addConstraint("reaction", "consumes", "molecule");
+	policy.addConstraint("reaction", "consumes", "protein");
+	policy.addConstraint("reaction", "consumes", "complex");
+	policy.addConstraint("reaction", "consumes", "dna");
+	policy.addConstraint("reaction", "consumes", "rna");
+	
+	policy.addConstraint("molecule", "is consumed by", "reaction");
+	policy.addConstraint("complex",  "is consumed by", "reaction");
+	policy.addConstraint("protein",  "is consumed by", "reaction");
+	policy.addConstraint("dna",      "is consumed by", "reaction");
+	policy.addConstraint("rna",      "is consumed by", "reaction");
 	
 	// A reaction products entities //
-	policy.addArcType("products");
-	policy.addConstraint("reaction", "products");
-	policy.addConstraint("products", "molecule");
-	policy.addConstraint("products", "complex");
-	policy.addConstraint("products", "protein");
-	policy.addConstraint("products", "dna");
-	policy.addConstraint("products", "rna");
+	policy.addConstraint("reaction", "products", "molecule");
+	policy.addConstraint("reaction", "products", "protein");
+	policy.addConstraint("reaction", "products", "complex");
+	policy.addConstraint("reaction", "products", "dna");
+	policy.addConstraint("reaction", "products", "rna");
 	
-	policy.addArcType("is_modulated_by");
+	policy.addConstraint("molecule", "is producted by", "reaction");
+	policy.addConstraint("complex",  "is producted by", "reaction");
+	policy.addConstraint("protein",  "is producted by", "reaction");
+	policy.addConstraint("dna",      "is producted by", "reaction");
+	policy.addConstraint("rna",      "is producted by", "reaction");
 	
+	// A reactions is modulated by entities //
+	policy.addConstraint("reaction", "is modulated by", "molecule");
+	policy.addConstraint("reaction", "is modulated by", "complex");
+	policy.addConstraint("reaction", "is modulated by", "protein");
+	policy.addConstraint("reaction", "is modulated by", "dna");
+	policy.addConstraint("reaction", "is modulated by", "rna");
 	
-	policy.addConstraint("reaction", "is_in");
-	policy.addConstraint("is_in", "pathway");
+	policy.addConstraint("molecule", "modulates", "reaction");
+	policy.addConstraint("complex",  "modulates", "reaction");
+	policy.addConstraint("protein",  "modulates", "reaction");
+	policy.addConstraint("dna",      "modulates", "reaction");
+	policy.addConstraint("rna",      "modulates", "reaction");
 	
-	
-	policy.addArcType("is_producted_by");
-	
-	policy.addArcType("modulates");
-	
-	policy.addArcType("is_referenced_by");
-	policy.addArcType("is_in");
 	
 	
 	
