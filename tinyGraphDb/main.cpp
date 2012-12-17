@@ -90,12 +90,73 @@ int main(int argc, const char * argv[])
 	policy.addConstraint("data_id", "refers", "reaction");
 	
 	
-	// Entity nodes
+	/*
+	 * Molecule
+	 */
 	policy.addNodeType("molecule");
+
+	// A molecule has names
+	policy.addConstraint("molecule", "has name", "name");
+	policy.addConstraint("name", "is name of", "molecule");
+	
+	// A molecule is referenced in data_sources through a data_id
+	policy.addConstraint("molecule", "has id", "data_id");
+	policy.addConstraint("data_id", "refers", "molecule");
+	
+	
+	/*
+	 * Protein
+	 */
 	policy.addNodeType("protein");
-	policy.addNodeType("complex");
+	
+	// A protein has names
+	policy.addConstraint("protein", "has name", "name");
+	policy.addConstraint("name", "is name of", "protein");
+	
+	// A protein is referenced in data_sources through a data_id
+	policy.addConstraint("protein", "has id", "data_id");
+	policy.addConstraint("data_id", "refers", "protein");
+	
+	
+	/*
+	 * Dna
+	 */
 	policy.addNodeType("dna");
+	
+	// A dna has names
+	policy.addConstraint("dna", "has name", "name");
+	policy.addConstraint("name", "is name of", "dna");
+	
+	// A dna is referenced in data_sources through a data_id
+	policy.addConstraint("dna", "has id", "data_id");
+	policy.addConstraint("data_id", "refers", "dna");
+	
+	
+	/*
+	 * Rna
+	 */
 	policy.addNodeType("rna");
+	
+	// A dna has names
+	policy.addConstraint("rna", "has name", "name");
+	policy.addConstraint("name", "is name of", "rna");
+	
+	// A rna is referenced in data_sources through a data_id
+	policy.addConstraint("rna", "has id", "data_id");
+	policy.addConstraint("data_id", "refers", "rna");
+	
+	/*
+	 * Complex
+	 */
+	policy.addNodeType("complex");
+	
+	// A dna has names
+	policy.addConstraint("complex", "has name", "name");
+	policy.addConstraint("name", "is name of", "complex");
+	
+	// A complex is referenced in data_sources through a data_id
+	policy.addConstraint("complex", "has id", "data_id");
+	policy.addConstraint("data_id", "refers", "complex");
 	
 	// A complex contains entities//
 	policy.addConstraint("complex", "contains", "molecule");
@@ -110,6 +171,7 @@ int main(int argc, const char * argv[])
 	policy.addConstraint("dna",      "is in complex", "complex");
 	policy.addConstraint("rna",      "is in complex", "complex");
 
+	
 	// An organism contains reactions, pathways and entities
 	policy.addConstraint("organism", "contains", "molecule");
 	policy.addConstraint("organism", "contains", "protein");
@@ -122,9 +184,6 @@ int main(int argc, const char * argv[])
 	policy.addConstraint("complex",  "is in organism", "organism");
 	policy.addConstraint("dna",      "is in organism", "organism");
 	policy.addConstraint("rna",      "is in organism", "organism");
-	
-	
-	
 	
 	// A pathway contains reactions and entities
 	policy.addConstraint("pathway", "contains", "reaction");
@@ -181,6 +240,7 @@ int main(int argc, const char * argv[])
 	policy.addConstraint("dna",      "modulates", "reaction");
 	policy.addConstraint("rna",      "modulates", "reaction");
 	
+	tinygraphdb::GraphDb tmp_graph (policy);
 	
 	
 	
