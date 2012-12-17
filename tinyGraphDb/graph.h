@@ -32,7 +32,7 @@ namespace tinygraphdb
 {
 	class Arc;
 	class Node;
-	class Graph;
+	class GraphDb;
 
 	/*
 	 * Node Class
@@ -111,7 +111,7 @@ namespace tinygraphdb
 	/*
 	 * Graph Class
 	 */
-	class Graph
+	class GraphDb
 	{
 	private:
 		Policy _policy;
@@ -119,8 +119,8 @@ namespace tinygraphdb
 		std::vector<Arc> _arcs;
 		
 	public:
-		explicit Graph (Policy & policy):_policy(policy) {};
-		~Graph () {};
+		explicit GraphDb (Policy & policy):_policy(policy) {};
+		~GraphDb () {};
 	};
 
 } // namespace tinygraphdb
