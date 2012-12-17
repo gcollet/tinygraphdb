@@ -40,13 +40,14 @@ namespace tinygraphdb
 	class Node
 	{
 	private:
-		int _index;
+		std::string _unique_id;
 		std::string _type;
 		std::map<std::string, std::string> _properties;
 		std::set<const Arc *> _arc_in;
 		std::set<const Arc *> _arc_out;
 	public:
-		explicit Node (const int & index, const std::string & type):_index(index), _type(type) {};
+		Node () {};
+		explicit Node (const std::string & unique_id, const std::string & type):_unique_id(unique_id), _type(type) {};
 		~Node () {};
 
 		void addProperty (const std::string & property, const std::string & value);
@@ -58,6 +59,7 @@ namespace tinygraphdb
 		const std::set<const Arc *> & getArcIn () const {return _arc_in;};
 		const std::set<const Arc *> & getArcOut () const {return _arc_out;};
 		const std::string & type () const {return _type;};
+		const std::string & unique_id () const {return _unique_id;};
 	};
 
 	/*
@@ -66,14 +68,15 @@ namespace tinygraphdb
 	class Arc
 	{
 	private:
-		int _index;
+		std::string _unique_id;
 		std::string _type;
-		Node * _from_node;
-		Node * _to_node;
+		const Node * _from_node;
+		const Node * _to_node;
 		std::map<std::string, std::string> _properties;
 
 	public:
-		explicit Arc (const int & index, const std::string & type, Node * from, Node * to):_index(index), _type(type), _from_node(from), _to_node(to) {};
+		Arc () {};
+		explicit Arc (const std::string & unique_id, const std::string & type, const Node * from, const Node * to):_unique_id(unique_id), _type(type), _from_node(from), _to_node(to) {};
 		~Arc () {};
 
 		void addProperty (const std::string & property, const std::string & value);
@@ -106,21 +109,30 @@ namespace tinygraphdb
 		
 		void addConstraint (std::string from_type, std::string arc_link, std::string to_type);
 		bool isValid       (std::string from_type, std::string arc_link, std::string to_type);
+		
+		void print();
 	};
 
 	/*
-	 * Graph Class
+	 * GraphDb Class
 	 */
 	class GraphDb
 	{
 	private:
 		Policy _policy;
-		std::vector<Node> _nodes;
-		std::vector<Arc> _arcs;
+		std::map<std::string, Node> _nodes;
+		std::map<std::string, Arc>  _arcs;
 		
 	public:
 		explicit GraphDb (Policy & policy):_policy(policy) {};
 		~GraphDb () {};
+		
+		void addNode(const std::string & unique_id, const std::string & type);
+		void addArc(Node * node_from, const std::string & type, Node * node_to);
+		
+		Node * node (const std::string & unique_id);
+		
+		const std::map<std::string, Arc> & getArcs () const {return _arcs;};
 	};
 
 } // namespace tinygraphdb

@@ -221,11 +221,11 @@ int main(int argc, const char * argv[])
 	policy.addConstraint("reaction", "products", "dna");
 	policy.addConstraint("reaction", "products", "rna");
 	
-	policy.addConstraint("molecule", "is producted by", "reaction");
-	policy.addConstraint("complex",  "is producted by", "reaction");
-	policy.addConstraint("protein",  "is producted by", "reaction");
-	policy.addConstraint("dna",      "is producted by", "reaction");
-	policy.addConstraint("rna",      "is producted by", "reaction");
+	policy.addConstraint("molecule", "is produced by", "reaction");
+	policy.addConstraint("complex",  "is produced by", "reaction");
+	policy.addConstraint("protein",  "is produced by", "reaction");
+	policy.addConstraint("dna",      "is produced by", "reaction");
+	policy.addConstraint("rna",      "is produced by", "reaction");
 	
 	// A reactions is modulated by entities //
 	policy.addConstraint("reaction", "is modulated by", "molecule");
@@ -242,7 +242,19 @@ int main(int argc, const char * argv[])
 	
 	tinygraphdb::GraphDb tmp_graph (policy);
 	
+	tmp_graph.addNode("Protein23874839", "protein");
+	tmp_graph.addNode("CONSUerkn", "reaction");
+	
+	tmp_graph.addArc(tmp_graph.node("CONSUerkn"), "consumes", tmp_graph.node("Protein23874839"));
+	tmp_graph.addArc(tmp_graph.node("Protein23874839"), "is produced by", tmp_graph.node("CONSUerkn"));
 	
 	
+	const std::map<std::string, tinygraphdb::Arc> & arcs = tmp_graph.getArcs();
+	for (std::map<std::string, tinygraphdb::Arc>::const_iterator it = arcs.begin(); it != arcs.end(); it++) {
+		std::cout << it->first << "\n";
+	}
+	
+	
+	//policy.print();
 }
 

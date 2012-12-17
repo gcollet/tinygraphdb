@@ -20,6 +20,7 @@
  */
 
 #include "graph.h"
+#include <sstream>
 
 using namespace tinygraphdb;
 
@@ -107,8 +108,59 @@ bool Policy :: isValid (std::string from_type, std::string arc_link, std::string
 	return false;
 }
 
+void Policy :: print ()
+{
+	for (std::set<std::string>::iterator it = _node_type.begin(); it != _node_type.end(); it++) {
+		std::cout << "\n" << *it << "\n";
+		for (int i = 0; i < _from_type.size(); i++) {
+			if ((*it).compare(_from_type[i]) == 0) {
+			std::cout << "  " << _from_type[i] << "->[" << _arc_link[i] << "]->" << _to_type[i] << "\n";
+			}
+		}
+	}
+}
+
 /*
- * Graph methods
+ * GraphDb methods
  */
 
+void GraphDb :: addNode(const std::string & unique_id, const std::string & type)
+{
+	if (_policy.isNodeType(type)) {
+		if (_nodes.find(unique_id) == _nodes.end()) {
+			std::cerr << "Add node (" << unique_id << ", " << type << ")\n";
+			_nodes[unique_id] = Node(unique_id, type);
+		} else {
+			std::cerr << "Node " << unique_id << " already created-> ignore\n";
+		}
+	} else {
+		std::cerr << "Unknown node type : " << type << " -> ignore\n";
+	}
+}
+
+void GraphDb :: addArc(Node * node_from, const std::string & type, Node * node_to)
+{
+	if (_policy.isValid(node_from->type(), type, node_to->type())) {
+		std::stringstream unique_id;
+		unique_id << node_from << type << node_to;
+		if (_arcs.find(unique_id.str()) == _arcs.end()) {
+			std::cerr << "Add arc " << node_from->unique_id() << "->[" << type << "]->" << node_to->unique_id()<< "\n";
+			_arcs[unique_id.str()] = Arc(unique_id.str(), type, node_from, node_to);
+			node_from->addArcOut (&_arcs[unique_id.str()]);
+			node_to->addArcIn (&_arcs[unique_id.str()]);
+		} else {
+			std::cerr << "Arc " << unique_id.str() << " already created-> ignore\n";
+		}
+	} else {
+		std::cerr << "Ignore arc not valid : " << node_from->type() << "->[" << type << "]->" << node_to->type()<< "\n";
+	}
+}
+
+Node * GraphDb :: node(const std::string & unique_id)
+{
+	if (_nodes.find(unique_id) != _nodes.end()) {
+		return &_nodes[unique_id];
+	}
+	return NULL;
+}
 
