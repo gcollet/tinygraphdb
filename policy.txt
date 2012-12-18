@@ -45,7 +45,7 @@ dna->[is in complex]->complex
 dna->[is in organism]->organism
 dna->[is in pathway]->pathway
 dna->[is consumed by]->reaction
-dna->[is producted by]->reaction
+dna->[is produced by]->reaction
 dna->[modulates]->reaction
 
 # Rna
@@ -55,7 +55,7 @@ rna->[is in complex]->complex
 rna->[is in organism]->organism
 rna->[is in pathway]->pathway
 rna->[is consumed by]->reaction
-rna->[is producted by]->reaction
+rna->[is produced by]->reaction
 rna->[modulates]->reaction
 
 # Molecule
@@ -65,7 +65,7 @@ molecule->[is in complex]->complex
 molecule->[is in organism]->organism
 molecule->[is in pathway]->pathway
 molecule->[is consumed by]->reaction
-molecule->[is producted by]->reaction
+molecule->[is produced by]->reaction
 molecule->[modulates]->reaction
 
 # Protein
@@ -75,7 +75,7 @@ protein->[is in complex]->complex
 protein->[is in organism]->organism
 protein->[is in pathway]->pathway
 protein->[is consumed by]->reaction
-protein->[is producted by]->reaction
+protein->[is produced by]->reaction
 protein->[modulates]->reaction
 
 # Complex
@@ -90,7 +90,7 @@ complex->[is in complex]->complex
 complex->[is in organism]->organism
 complex->[is in pathway]->pathway
 complex->[is consumed by]->reaction
-complex->[is producted by]->reaction
+complex->[is produced by]->reaction
 complex->[modulates]->reaction
 
 # Reaction
