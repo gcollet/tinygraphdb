@@ -19,7 +19,7 @@
  * THE SOFTWARE.
  */
 
-#include "graph.h"
+#include "tinygraphdb.h"
 #include <sstream>
 
 using namespace tinygraphdb;

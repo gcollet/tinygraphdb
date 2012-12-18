@@ -20,7 +20,7 @@
  */
 
 #include <iostream>
-#include "graph.h"
+#include "tinygraphdb.h"
 
 int main(int argc, const char * argv[])
 {
