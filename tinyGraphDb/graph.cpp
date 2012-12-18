@@ -111,13 +111,26 @@ bool Policy :: isValid (std::string from_type, std::string arc_link, std::string
 void Policy :: print ()
 {
 	for (std::set<std::string>::iterator it = _node_type.begin(); it != _node_type.end(); it++) {
-		std::cout << "\n" << *it << "\n";
 		for (int i = 0; i < _from_type.size(); i++) {
 			if ((*it).compare(_from_type[i]) == 0) {
-			std::cout << "  " << _from_type[i] << "->[" << _arc_link[i] << "]->" << _to_type[i] << "\n";
+			std::cout << _from_type[i] << "->[" << _arc_link[i] << "]->" << _to_type[i] << "\n";
 			}
 		}
 	}
+}
+
+void rem_spaces(std::string & str)
+{
+	int beg = 0;
+	while (str[beg] == ' ') {
+		beg++;
+	}
+	str = str.substr(beg);
+	int end = (int)str.size() - 1;
+	while (str[end] == ' ') {
+		end--;
+	}
+	str = str.substr(0,end + 1);
 }
 
 void Policy :: read (std::string fname)
@@ -138,6 +151,7 @@ void Policy :: read (std::string fname)
 				continue;
 			}
 			std::string from_type = line.substr(0,pos);
+			rem_spaces(from_type);
 			line = line.substr(pos+3);
 			pos = (int) line.find("]->");
 			if (pos < 0 && pos >= line.size()) {
@@ -145,7 +159,9 @@ void Policy :: read (std::string fname)
 				continue;
 			}
 			std::string arc_type = line.substr(0,pos);
+			rem_spaces(arc_type);
 			std::string to_type = line.substr(pos+3);
+			rem_spaces(to_type);
 			addConstraint (from_type, arc_type, to_type);
 		}
 	}
