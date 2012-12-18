@@ -31,6 +31,8 @@
 		87990E241678DE2800A1A15F /* tinyGraphDb.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = tinyGraphDb.1; sourceTree = "<group>"; };
 		87990E2B1678DE8800A1A15F /* graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graph.cpp; sourceTree = "<group>"; };
 		87990E2C1678DE8800A1A15F /* graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
+		87F91B131680606B001BFF88 /* policy.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = policy.txt; sourceTree = "<group>"; };
+		87F91B1516806D1A001BFF88 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +51,8 @@
 			children = (
 				87990E211678DE2800A1A15F /* tinyGraphDb */,
 				87990E1F1678DE2800A1A15F /* Products */,
+				87F91B1516806D1A001BFF88 /* README.txt */,
+				87F91B131680606B001BFF88 /* policy.txt */,
 			);
 			sourceTree = "<group>";
 		};
@@ -218,6 +222,7 @@
 				87990E2A1678DE2800A1A15F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
