@@ -26,7 +26,6 @@ int main(int argc, const char * argv[])
 {
 	// Define the graph policy //
 	tinygraphdb::Policy policy;
-	tinygraphdb::Policy policy2;
 	policy.read("/Users/gcollet/Work/proj/tinyGraphDb/policy.txt");
 	tinygraphdb::GraphDb tmp_graph (policy);
 }
