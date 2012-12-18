@@ -23,6 +23,7 @@
 #define __tinyGraphDb__graph__
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <map>
@@ -111,6 +112,7 @@ namespace tinygraphdb
 		bool isValid       (std::string from_type, std::string arc_link, std::string to_type);
 		
 		void print();
+		void read (std::string fname);
 	};
 
 	/*

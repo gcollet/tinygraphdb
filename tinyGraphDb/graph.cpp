@@ -120,6 +120,37 @@ void Policy :: print ()
 	}
 }
 
+void Policy :: read (std::string fname)
+{
+	std::string line;
+	std::ifstream infile;
+	infile.open (fname.c_str());
+	while(infile.good()) {
+		getline(infile, line);
+		int pos = (int) line.find("#");
+		if (pos >= 0 && pos < line.size()) {
+			line = line.substr(0, pos);
+		}
+		if (!line.empty()) {
+			pos = (int) line.find("->[");
+			if (pos < 0 && pos >= line.size()) {
+				std::cerr << "Error in policy definition\n  This constraint is not weel formed: " << line << "\n";
+				continue;
+			}
+			std::string from_type = line.substr(0,pos);
+			line = line.substr(pos+3);
+			pos = (int) line.find("]->");
+			if (pos < 0 && pos >= line.size()) {
+				std::cerr << "Error in policy definition\n  This constraint is not weel formed: " << from_type << "->[" << line << "\n";
+				continue;
+			}
+			std::string arc_type = line.substr(0,pos);
+			std::string to_type = line.substr(pos+3);
+			addConstraint (from_type, arc_type, to_type);
+		}
+	}
+}
+
 /*
  * GraphDb methods
  */
