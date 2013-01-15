@@ -20,13 +20,17 @@
  */
 
 #include <iostream>
+#include <exception>
 #include "tinygraphdb.h"
 
 int main(int argc, const char * argv[])
 {
-	// Define the graph policy //
-	tinygraphdb::Policy policy;
-	policy.read("/Users/gcollet/Work/proj/tinyGraphDb/policy.txt");
-	tinygraphdb::GraphDb tmp_graph (policy);
+	tinygraphdb::GraphDb tmp_graph (argv[1]);
+	tmp_graph.print();
+	std::set<tinygraphdb::Node *> nodelist = tmp_graph.getAllNodes("(species)1<-[");
+	for (std::set<tinygraphdb::Node *>::iterator it = nodelist.begin(); it != nodelist.end(); it++) {
+		(*it)->print();
+	}
+	return 0;
 }
 
