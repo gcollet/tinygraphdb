@@ -664,3 +664,66 @@ std::set<Node *> GraphDb :: getNodesOfType (std::string type)
 	
 	return nodes;
 }
+
+std::set<Node *> GraphDb :: getNodesOfTypeWithProperty (std::string type, std::string prop_name)
+{
+	std::set<Node *> nodes;
+	if (_node_types.find(type) == _node_types.end()) {
+		std::stringstream error_message;
+		error_message << "Cannot find node with type (" << type << ")";
+		throw std::runtime_error(error_message.str());
+	}
+	std::set<int> & node_set = _node_types[type];
+	for (std::set<int>::iterator it = node_set.begin(); it != node_set.end(); it++) {
+		if (_nodes[*it].hasProp(prop_name)) {
+			nodes.insert(&_nodes[*it]);
+		}
+	}
+	return nodes;
+}
+
+
+std::set<Node *> GraphDb :: getNodesOfTypeWithProperty (std::string type, std::string prop_name, std::string prop_value)
+{
+	std::set<Node *> nodes;
+	if (_node_types.find(type) == _node_types.end()) {
+		std::stringstream error_message;
+		error_message << "Cannot find node with type (" << type << ")";
+		throw std::runtime_error(error_message.str());
+	}
+	std::set<int> & node_set = _node_types[type];
+	for (std::set<int>::iterator it = node_set.begin(); it != node_set.end(); it++) {
+		if (_nodes[*it].hasProp(prop_name, prop_value)) {
+			nodes.insert(&_nodes[*it]);
+		}
+	}
+	return nodes;
+}
+
+std::set<Node *> GraphDb :: getNodesWithProperty (std::string prop_name)
+{
+	std::set<Node *> nodes;
+	if (_props.find(prop_name) != _props.end()) {
+		for (std::map<std::string, std::set<int> >::iterator pit = _props[prop_name].begin(); pit != _props[prop_name].end(); pit++) {
+			for (std::set<int>::iterator it = pit->second.begin(); it != pit->second.end(); it++) {
+				nodes.insert(&_nodes[*it]);
+			}
+		}
+	}
+	return nodes;
+}
+
+std::set<Node *> GraphDb :: getNodesWithProperty (std::string prop_name, std::string prop_value)
+{
+	std::set<Node *> nodes;
+	
+	if (_props.find(prop_name) != _props.end()) {
+		if (_props[prop_name].find(prop_value) != _props[prop_name].end()) {
+			for (std::set<int>::iterator it = _props[prop_name][prop_value].begin(); it != _props[prop_name][prop_value].end(); it++) {
+				nodes.insert(&_nodes[*it]);
+			}
+		}
+	}
+	return nodes;
+
+}

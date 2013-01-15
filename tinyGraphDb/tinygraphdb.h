@@ -83,6 +83,7 @@ namespace tinygraphdb
 		const std::set<Arc *> & ArcOut () const {return _arc_out;};
 		
 		bool hasProp (const std::string & prop_name, const std::string & prop_value);
+		bool hasProp (const std::string & prop_name) {return _properties.find(prop_name) != _properties.end();};
 		
 		void print();
 		void print (std::ofstream & outfile);
@@ -232,6 +233,13 @@ namespace tinygraphdb
 		
 		Node * getNode (int node_id);
 		std::set<Node *> getNodesOfType (std::string type);
+		
+		std::set<Node *> getNodesWithProperty (std::string prop_name);
+		std::set<Node *> getNodesWithProperty (std::string prop_name, std::string prop_value);
+		
+		std::set<Node *> getNodesOfTypeWithProperty (std::string type, std::string prop_name);
+		std::set<Node *> getNodesOfTypeWithProperty (std::string type, std::string prop_name, std::string prop_value);
+		
 		std::set<Node *> getAllNodes (const std::string & constraint);
 		
 		int nbNode () {return (int) _nodes.size();};
