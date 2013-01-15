@@ -596,15 +596,12 @@ std::set<Node *> GraphDb :: getAllNodes (const std::string & constraint)
 		
 		// read node_type
 		std::string node_type = readType(node_line);
-		std::cerr << "node type :" << node_type << "\n";
 		
 		// read node unique id
 		int node_id = -1;
 		try {
 			node_id = readId(node_line);
 		} catch (std::exception & e) {}
-		
-		std::cerr << "node id :" << node_id << "\n";
 		
 		if (node_id >= 0) {
 			Node * tmp_node = NULL;
@@ -627,7 +624,7 @@ Node * GraphDb :: getNode (int node_id)
 {
 	if (_nodes.find(node_id) == _nodes.end()) {
 		std::stringstream error_message;
-		error_message << "Cannot find node with id " << node_id << "\'";
+		error_message << "Cannot find node with id " << node_id;
 		throw std::runtime_error(error_message.str());
 	}
 	return &_nodes[node_id];
@@ -638,7 +635,7 @@ std::set<Node *> GraphDb :: getNodesOfType (std::string type)
 	std::set<Node *> nodes;
 	if (_node_types.find(type) == _node_types.end()) {
 		std::stringstream error_message;
-		error_message << "Cannot find type " << type << "\'";
+		error_message << "Cannot find node with type (" << type << ")";
 		throw std::runtime_error(error_message.str());
 	}
 	

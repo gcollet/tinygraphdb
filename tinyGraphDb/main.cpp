@@ -27,7 +27,13 @@ int main(int argc, const char * argv[])
 {
 	tinygraphdb::GraphDb tmp_graph (argv[1]);
 	tmp_graph.print();
-	std::set<tinygraphdb::Node *> nodelist = tmp_graph.getAllNodes("(species)1<-[");
+	std::set<tinygraphdb::Node *> nodelist;
+	try {
+		nodelist = tmp_graph.getAllNodes("(species)*<-[");
+	} catch (std::exception & e) {
+		std::cerr << e.what() << " -> ignore\n";
+	}
+	
 	for (std::set<tinygraphdb::Node *>::iterator it = nodelist.begin(); it != nodelist.end(); it++) {
 		(*it)->print();
 	}
