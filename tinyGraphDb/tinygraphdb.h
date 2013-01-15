@@ -179,12 +179,15 @@ namespace tinygraphdb
 		GraphDbInterface () {};
 		virtual ~GraphDbInterface () {};
 		
+		virtual int newNode (const std::string & type, const std::map<std::string, std::string> & properties) = 0;
 		virtual void addNode (const int & unique_id, const std::string & type, const std::map<std::string, std::string> & properties) = 0;
 		virtual void addArc  (const int & from_id, const std::string & type, const int & to_id, const std::map<std::string, std::string> & properties) = 0;
 		
 		virtual Node * getNode (int node_id) = 0;
 		virtual std::set<Node *> getNodesOfType (std::string type) = 0;
 		virtual std::set<Node *> getAllNodes (const std::string & constraint) = 0;
+		
+		virtual int nbNode() = 0;
 		
 		virtual void save (std::string fname) = 0;
 		virtual void print () = 0;
@@ -221,12 +224,15 @@ namespace tinygraphdb
 		~GraphDb () {};
 		
 		// Adders check consistency on the defined policy //
+		int newNode (const std::string & type, const std::map<std::string, std::string> & properties);
 		void addNode (const int & unique_id, const std::string & type, const std::map<std::string, std::string> & properties);
 		void addArc  (const int & from_id, const std::string & type, const int & to_id, const std::map<std::string, std::string> & properties);
 		
 		Node * getNode (int node_id);
 		std::set<Node *> getNodesOfType (std::string type);
 		std::set<Node *> getAllNodes (const std::string & constraint);
+		
+		int nbNode () {return (int) _nodes.size();};
 		
 		void save (std::string fname);
 		void print();

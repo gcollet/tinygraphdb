@@ -318,6 +318,27 @@ void Policy :: read (std::string fname)
  * GraphDb methods
  */
 
+int GraphDb :: newNode (const std::string & type, const std::map<std::string, std::string> & properties)
+{
+	if (!_policy.isNodeType(type)) {
+		std::stringstream error_message;
+		error_message << "Unknown node type \'" << type << "\'";
+		throw std::runtime_error(error_message.str());
+	}
+	int unique_id = (int) _nodes.size();
+	if (_nodes.find(unique_id) != _nodes.end()) {
+		std::map<int, Node>::iterator it = _nodes.end();
+		it--;
+		unique_id = it->first + 1;
+	}
+	_nodes[unique_id] = Node(unique_id, type, properties);
+	_node_types[type].insert(unique_id);
+	for (std::map<std::string, std::string>::const_iterator it = properties.begin(); it != properties.end(); it++) {
+		_props[it->first][it->second].insert(unique_id);
+	}
+	return unique_id;
+}
+
 /*
  * Add a node to the database
  * Check the type is valid and the unique id has not already been seen
@@ -551,7 +572,7 @@ GraphDb :: GraphDb (std::string fname)
 
 void GraphDb :: save (std::string fname)
 {
-	std::ofstream outfile ("test.txt");
+	std::ofstream outfile (fname);
 	
 	_policy.print(outfile);
 	outfile << "\nDatabase\n\n# Nodes\n\n";
