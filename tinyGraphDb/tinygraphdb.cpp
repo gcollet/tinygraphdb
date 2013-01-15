@@ -181,7 +181,7 @@ bool Node :: hasProp (const std::string & prop_name, const std::string & prop_va
  */
 void Arc :: print ()
 {
-	std::cout << _from_node->unique_id() << "->[" << _type;
+	std::cout << _from_node->unique_id() << "->[(" << _type << ")";
 	std::map<std::string, std::string>::iterator it = _properties.begin();
 	if (it != _properties.end()) {
 		std::cout << "{" << it->first << "=\"" << it->second << "\"";
@@ -196,7 +196,7 @@ void Arc :: print ()
 
 void Arc :: print (std::ofstream & outfile)
 {
-	outfile << _from_node->unique_id() << "->[" << _type;
+	outfile << _from_node->unique_id() << "->[(" << _type << ")";
 	std::map<std::string, std::string>::iterator it = _properties.begin();
 	if (it != _properties.end()) {
 		outfile << "{" << it->first << "=\"" << it->second << "\"";
@@ -428,7 +428,7 @@ void GraphDb :: readNode (std::string line)
 		
 		// read node properties
 		std::map<std::string, std::string> node_properties;
-		int end_prop = (int) line.find("}");
+		int end_prop = (int) line.rfind("}");
 		if (beg_prop >= 0 || beg_prop < line.size() || end_prop >= 0 || end_prop < line.size()) {
 			node_properties = readProperties (line.substr(beg_prop + 1, end_prop - beg_prop - 1));
 		}
@@ -452,7 +452,7 @@ void GraphDb :: readArc (std::string line)
 			throw std::runtime_error(error_message.str());
 		}
 		// read from type
-		std::string from_type = readType(line.substr(0,end_from));
+		//std::string from_type = readType(line.substr(0,end_from));
 		// read from id
 		int from_node_id = readId(line.substr(0,end_from));
 		
@@ -464,7 +464,7 @@ void GraphDb :: readArc (std::string line)
 			throw std::runtime_error(error_message.str());
 		}
 		// read to type
-		std::string to_type = readType(line.substr(beg_to));
+		//std::string to_type = readType(line.substr(beg_to));
 		// read from id
 		int to_node_id = readId(line.substr(beg_to));
 		
@@ -542,11 +542,8 @@ GraphDb :: GraphDb (std::string fname)
 	}
 	while(infile.good()) {
 		getline(infile, line);
-		int pos = (int) line.find("#");
-		if (pos >= 0 && pos < line.size()) {
-			line = line.substr(0, pos);
-		}
-		if (!line.empty()) {
+		rem_spaces(line);
+		if (!line.empty() && line[0] != '#') {
 			rem_spaces(line);
 			if (line.compare("Policy") == 0) {
 				break;

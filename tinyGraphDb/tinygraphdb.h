@@ -31,6 +31,8 @@
 #include <map>
 #include <set>
 
+void rem_spaces(std::string & str);
+
 namespace tinygraphdb
 {
 	class Arc;
