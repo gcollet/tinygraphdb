@@ -131,8 +131,8 @@ namespace tinygraphdb
 			return _properties.find(property)->second;
 		};
 		const std::map<std::string, std::string> & properties () const {return _properties;};
-		const Node * fromNode () const {return _from_node;};
-		const Node * toNode () const {return _to_node;};
+		Node * fromNode () {return _from_node;};
+		Node * toNode () {return _to_node;};
 		
 		void print();
 		void print (std::ofstream & outfile);
