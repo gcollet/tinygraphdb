@@ -176,6 +176,28 @@ bool Node :: hasProp (const std::string & prop_name, const std::string & prop_va
 	return false;
 }
 
+std::set<Arc *> Node :: getArcInOfType(const std::string & type)
+{
+	std::set<Arc *> tmp_arcs;
+	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++) {
+		if ((*it)->type().compare(type) == 0){
+			tmp_arcs.insert((*it));
+		}
+	}
+	return tmp_arcs;
+}
+
+std::set<Arc *> Node :: getArcOutOfType(const std::string & type)
+{
+	std::set<Arc *> tmp_arcs;
+	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++) {
+		if ((*it)->type().compare(type) == 0){
+			tmp_arcs.insert((*it));
+		}
+	}
+	return tmp_arcs;
+}
+
 /*
  * Arc methods
  */

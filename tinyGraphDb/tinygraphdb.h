@@ -82,6 +82,9 @@ namespace tinygraphdb
 		const std::set<Arc *> & ArcIn () const {return _arc_in;};
 		const std::set<Arc *> & ArcOut () const {return _arc_out;};
 		
+		std::set<Arc *> getArcInOfType(const std::string & type);
+		std::set<Arc *> getArcOutOfType(const std::string & type);
+		
 		bool hasProp (const std::string & prop_name, const std::string & prop_value);
 		bool hasProp (const std::string & prop_name) {return _properties.find(prop_name) != _properties.end();};
 		
