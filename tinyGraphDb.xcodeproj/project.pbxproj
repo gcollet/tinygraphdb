@@ -31,7 +31,7 @@
 		87990E241678DE2800A1A15F /* tinyGraphDb.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = tinyGraphDb.1; sourceTree = "<group>"; };
 		87990E2B1678DE8800A1A15F /* tinygraphdb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinygraphdb.cpp; sourceTree = "<group>"; };
 		87990E2C1678DE8800A1A15F /* tinygraphdb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinygraphdb.h; sourceTree = "<group>"; };
-		87F91B131680606B001BFF88 /* policy.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = policy.txt; sourceTree = "<group>"; };
+		87F91B131680606B001BFF88 /* database.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = database.txt; sourceTree = "<group>"; };
 		87F91B1516806D1A001BFF88 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -52,7 +52,7 @@
 				87990E211678DE2800A1A15F /* tinyGraphDb */,
 				87990E1F1678DE2800A1A15F /* Products */,
 				87F91B1516806D1A001BFF88 /* README.txt */,
-				87F91B131680606B001BFF88 /* policy.txt */,
+				87F91B131680606B001BFF88 /* database.txt */,
 			);
 			sourceTree = "<group>";
 		};
