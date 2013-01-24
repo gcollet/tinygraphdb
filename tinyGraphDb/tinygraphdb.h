@@ -85,6 +85,8 @@ namespace tinygraphdb
 		std::set<Arc *> getArcInOfType(const std::string & type);
 		std::set<Arc *> getArcOutOfType(const std::string & type);
 		
+		void changeType (std::string type){_type = type;};
+		
 		bool hasProp (const std::string & prop_name, const std::string & prop_value);
 		bool hasProp (const std::string & prop_name) {return _properties.find(prop_name) != _properties.end();};
 		
@@ -226,6 +228,7 @@ namespace tinygraphdb
 		std::map<std::string, std::string> readProperties (std::string line);
 		
 	public:
+		explicit GraphDb (Policy policy): _policy(policy) {};
 		explicit GraphDb (std::string fname);
 		~GraphDb () {};
 		
@@ -244,6 +247,10 @@ namespace tinygraphdb
 		std::set<Node *> getNodesOfTypeWithProperty (std::string type, std::string prop_name, std::string prop_value);
 		
 		std::set<Node *> getAllNodes (const std::string & constraint);
+		
+		const Policy & policy () const {return _policy;};
+		
+		std::set<Node *> findSimilarNodes(Node * node);
 		
 		int nbNode () {return (int) _nodes.size();};
 		

@@ -738,7 +738,6 @@ std::set<Node *> GraphDb :: getNodesWithProperty (std::string prop_name)
 std::set<Node *> GraphDb :: getNodesWithProperty (std::string prop_name, std::string prop_value)
 {
 	std::set<Node *> nodes;
-	
 	if (_props.find(prop_name) != _props.end()) {
 		if (_props[prop_name].find(prop_value) != _props[prop_name].end()) {
 			for (std::set<int>::iterator it = _props[prop_name][prop_value].begin(); it != _props[prop_name][prop_value].end(); it++) {
@@ -749,3 +748,42 @@ std::set<Node *> GraphDb :: getNodesWithProperty (std::string prop_name, std::st
 	return nodes;
 
 }
+
+int local_similarity (Node * node1, Node * node2)
+{
+	int similarity = 0;
+	// Check properties
+	const std::map<std::string, std::string> & properties = node1->properties();
+	for (std::map<std::string, std::string>::const_iterator it = properties.begin(); it != properties.end(); it++) {
+		if (node2->hasProp(it->first, it->second)) {
+			similarity++;
+		}
+	}
+	return similarity;
+}
+
+std::set<Node *> GraphDb :: findSimilarNodes(Node * node)
+{
+	std::set<Node *> similar;
+	std::string type = node->type();
+	std::map<int, Node>::iterator it = _nodes.begin();
+	for (; it != _nodes.end(); it++) {
+		int similarity = local_similarity(node, &it->second);
+		if (similarity >= 1) {
+			similar.insert(&it->second);
+			break;
+		}
+	}
+	if (it == _nodes.end()) {
+		node->print();
+		std::cerr << "not found\n";
+	}
+	return similar;
+}
+
+
+
+
+
+
+
