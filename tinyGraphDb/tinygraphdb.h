@@ -74,7 +74,7 @@ namespace tinygraphdb
 			if (_properties.find(property) == _properties.end()) {
 				std::stringstream error_message;
 				error_message << "Property \"" << property << "\" not found in node << " << unique_id() << "\n";
-				throw error_message.str();
+				throw std::runtime_error(error_message.str());
 			}
 			return _properties.find(property)->second;
 		};
@@ -87,6 +87,9 @@ namespace tinygraphdb
 		
 		void changeType (std::string type){_type = type;};
 		
+		bool hasArcOfType (std::string type);
+		bool hasArcOfTypeToNode (std::string type, Node * node);
+		std::set<Node *> getNodeFromArcOfType (std::string type);
 		bool hasProp (const std::string & prop_name, const std::string & prop_value);
 		bool hasProp (const std::string & prop_name) {return _properties.find(prop_name) != _properties.end();};
 		
@@ -128,7 +131,7 @@ namespace tinygraphdb
 			if (_properties.find(property) == _properties.end()) {
 				std::stringstream error_message;
 				error_message << "Property \"" << property << "\" not found in node << " << unique_id() << "\n";
-				throw error_message.str();
+				throw std::runtime_error(error_message.str());
 			}
 			return _properties.find(property)->second;
 		};
@@ -247,7 +250,7 @@ namespace tinygraphdb
 		std::set<Node *> getNodesOfTypeWithProperty (std::string type, std::string prop_name, std::string prop_value);
 		
 		std::set<Node *> getAllNodes (const std::string & constraint);
-		
+		std::set<Node *> allNodes ();
 		const Policy & policy () const {return _policy;};
 		
 		std::set<Node *> findSimilarNodes(Node * node);

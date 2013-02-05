@@ -153,6 +153,41 @@ void Node ::  print()
 	std::cout << "\n";
 }
 
+bool Node :: hasArcOfType (std::string type)
+{
+	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++)
+		if ((*it)->type().compare(type) == 0)
+			return true;
+	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++)
+		if ((*it)->type().compare(type) == 0)
+			return true;
+	return false;
+}
+
+bool Node :: hasArcOfTypeToNode (std::string type, Node * node)
+{
+	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++)
+		if ((*it)->type().compare(type) == 0)
+			if ((*it)->toNode() == node)
+				return true;
+	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++)
+		if ((*it)->type().compare(type) == 0)
+			return true;
+	return false;
+}
+
+std::set<Node *> Node :: getNodeFromArcOfType (std::string type)
+{
+	std::set<Node *> out_node;
+	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++)
+		if ((*it)->type().compare(type) == 0)
+			out_node.insert((*it)->toNode());
+	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++)
+		if ((*it)->type().compare(type) == 0)
+			out_node.insert((*it)->toNode());
+	return out_node;
+}
+
 void Node ::  print(std::ofstream & outfile)
 {
 	outfile << "(" << _type << ")" << _unique_id;
@@ -781,7 +816,14 @@ std::set<Node *> GraphDb :: findSimilarNodes(Node * node)
 	return similar;
 }
 
-
+std::set<Node *> GraphDb :: allNodes ()
+{
+	std::set<Node *>  all;
+	for (std::map<int, Node>::iterator it = _nodes.begin(); it != _nodes.end(); it++) {
+		all.insert(&it->second);
+	}
+	return all;
+}
 
 
 
