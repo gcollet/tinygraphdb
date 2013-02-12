@@ -94,6 +94,7 @@ namespace tinygraphdb
 		bool hasProp (const std::string & prop_name) {return _properties.find(prop_name) != _properties.end();};
 		
 		void print();
+		void printFull();
 		void print (std::ofstream & outfile);
 	};
 

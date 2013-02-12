@@ -153,6 +153,14 @@ void Node ::  print()
 	std::cout << "\n";
 }
 
+void Node :: printFull()
+{
+	print();
+	for (std::set<Arc*>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++) {
+		std::cout << "-[" << (*it)->type() << "]->";
+		(*it)->toNode()->print();
+	}
+}
 bool Node :: hasArcOfType (std::string type)
 {
 	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++)
