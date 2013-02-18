@@ -22,12 +22,29 @@
  * THE SOFTWARE.
  */
 
-#include <iostream>
-#include <exception>
 #include "tinygraphdb.h"
 
 int main(int argc, const char * argv[])
 {
+	// Create a small policy where:
+	// - proteins catalyse reactions.
+	// - compounds participate to a reaction as left or right elements.
+	tinygraphdb::Policy policy;
+	
+	policy.addNodeType("compound");
+	policy.addNodeType("protein");
+	policy.addNodeType("reaction");
+	
+	policy.addConstraint("compound","is left of","reaction");
+	policy.addConstraint("compound","is right of","reaction");
+	
+	policy.addConstraint("protein","catalyses","reaction");
+	policy.addConstraint("reaction","is catalysed by","protein");
+	
+	// Create a graph database based on this policy
+	
+	
+	
 	return 0;
 }
 

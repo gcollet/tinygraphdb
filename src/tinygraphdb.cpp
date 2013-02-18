@@ -637,7 +637,8 @@ GraphDb :: GraphDb (std::string fname)
 
 void GraphDb :: save (std::string fname)
 {
-	std::ofstream outfile (fname);
+	std::ofstream outfile;
+	outfile.open (fname.c_str());
 	
 	_policy.print(outfile);
 	outfile << "\nDatabase\n\n# Nodes\n\n";
