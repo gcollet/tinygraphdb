@@ -1,4 +1,7 @@
-/* Copyright (c) 2010 Guillaume Collet
+/*
+ * Tinygraphdb version 1.0
+ *
+ * Copyright (c) 2010 Guillaume Collet
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,18 +28,6 @@
 
 int main(int argc, const char * argv[])
 {
-	tinygraphdb::GraphDb tmp_graph (argv[1]);
-	tmp_graph.print();
-	std::set<tinygraphdb::Node *> nodelist;
-	try {
-		nodelist = tmp_graph.getAllNodes("(species)*<-[");
-	} catch (std::exception & e) {
-		std::cerr << e.what() << " -> ignore\n";
-	}
-	
-	for (std::set<tinygraphdb::Node *>::iterator it = nodelist.begin(); it != nodelist.end(); it++) {
-		(*it)->print();
-	}
 	return 0;
 }
 
