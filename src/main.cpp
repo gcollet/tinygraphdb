@@ -95,6 +95,7 @@ int main(int argc, const char * argv[])
 	
 	// Print statistics
 	std::cerr << "\nnb nodes : " << graph_db.nbNode() << "\nnb arcs : " << graph_db.nbArc() << "\n";
+>>>>>>> release_1.0
 	return 0;
 }
 
