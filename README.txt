@@ -1,9 +1,26 @@
-tinygraphDb is a tiny graph database engine
+TinygraphDb is a tiny graph database engine written in C++
 
-I will need help to develop it because I will use it in my personnal project 
+I will need help to develop it because I will use it in my personal project 
 but I don't know what are the needs for other projects.
 
 Feel free to participate !
+
+In version 1.0, you can create a graph database with nodes and arcs (vertex and edges) under a given policy. The policy defines the types of nodes (strictly) and the type of arc between two nodes.
+
+Example:
+
+protein->[has id]->db_id
+
+This policy defines an arc of type "has id" from a node of type "protein" to a node of type "db_id". If you try to create an arc of type "has id" from a node of type "db_id" to a node of type "protein", an exception is thrown.
+
+TODOs:
+
+Add some algorithms like graph traversal, map reduce, etc…
+These algorithms can be used but not directly (you have to code it).
+
+Add a graphDb with no policy (no constraints on arc and node types)
+
+Licence:
 
 Copyright (c) 2010 Guillaume Collet
 

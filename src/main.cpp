@@ -1,4 +1,7 @@
-/* Copyright (c) 2010 Guillaume Collet
+/*
+ * Tinygraphdb version 1.0
+ *
+ * Copyright (c) 2010 Guillaume Collet
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,24 +22,79 @@
  * THE SOFTWARE.
  */
 
-#include <iostream>
-#include <exception>
 #include "tinygraphdb.h"
 
 int main(int argc, const char * argv[])
 {
-	tinygraphdb::GraphDb tmp_graph (argv[1]);
-	tmp_graph.print();
-	std::set<tinygraphdb::Node *> nodelist;
+	// Create a small policy where:
+	// - compounds participate to a reaction as left or right elements.
+	tinygraphdb::Policy policy;
+	
+	policy.addNodeType("compound");
+	policy.addNodeType("reaction");
+	
+	policy.addConstraint("compound","is left of","reaction");
+	policy.addConstraint("compound","is right of","reaction");
+	
+	// Create a graph database based on this policy
+	tinygraphdb::GraphDb graph_db(policy);
+	
+	// Create a new node with valid type
+	int n1;
 	try {
-		nodelist = tmp_graph.getAllNodes("(species)*<-[");
+		n1 = graph_db.newNode("compound", std::map<std::string,std::string>());
 	} catch (std::exception & e) {
 		std::cerr << e.what() << " -> ignore\n";
 	}
 	
-	for (std::set<tinygraphdb::Node *>::iterator it = nodelist.begin(); it != nodelist.end(); it++) {
-		(*it)->print();
+	// Create a new node with invalid type caught by an exception
+	try {
+		graph_db.newNode("dna", std::map<std::string,std::string>());
+	} catch (std::exception & e) {
+		std::cerr << e.what() << " -> ignore\n";
 	}
+		
+	// Create a compound with a property
+	std::map<std::string,std::string> property;
+	property["name"] = "PYRUVATE";
+	int n2;
+	try {
+		n2 = graph_db.newNode("compound", property);
+	} catch (std::exception & e) {
+		std::cerr << e.what() << " -> ignore\n";
+	}
+	
+	// Create a reaction
+	int r1;
+	try {
+		r1 = graph_db.newNode("reaction", std::map<std::string,std::string>());
+	} catch (std::exception & e) {
+		std::cerr << e.what() << " -> ignore\n";
+	}
+	
+	// Create a "is left of" relation between n1 and r1
+	try {
+		graph_db.addArc(n1, "is left of", r1, std::map<std::string,std::string>());
+	} catch (std::exception & e) {
+		std::cerr << e.what() << " -> ignore\n";
+	}
+	
+	// Create an invalid "is left of" relation between r1 and n2
+	try {
+		graph_db.addArc(r1, "is left of", n1, std::map<std::string,std::string>());
+	} catch (std::exception & e) {
+		std::cerr << e.what() << " -> ignore\n";
+	}
+	
+	// Print the database on standard output
+	std::cerr << "\n";
+	graph_db.print();
+	
+	// Print the database on output file
+	graph_db.save("output.txt");
+	
+	// Print statistics
+	std::cerr << "\nnb nodes : " << graph_db.nbNode() << "\nnb arcs : " << graph_db.nbArc() << "\n";
 	return 0;
 }
 

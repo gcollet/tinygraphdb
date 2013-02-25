@@ -1,4 +1,7 @@
-/* Copyright (c) 2010 Guillaume Collet
+/* 
+ * Tinygraphdb version 1.0
+ *
+ * Copyright (c) 2010 Guillaume Collet
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +25,7 @@
 #ifndef __tinyGraphDb__graph__
 #define __tinyGraphDb__graph__
 
+#include <stdexcept>
 #include <iostream>
 #include <utility>
 #include <sstream>
@@ -40,14 +44,15 @@ namespace tinygraphdb
 	class GraphDb;
 	class Policy;
 	
-	/*
+	
+	/*******************************************************************************
 	 * Node Class
 	 *
 	 * _unique_id  : A node is uniquely identified by its _unique_id
 	 * _type       : A node has a type which will be used to check policy
 	 * _properties : A node has properties (pairs of strings)
 	 * _arc_in(out): A node has a set of output arcs and a set of input arcs
-	 */
+	 *******************************************************************************/
 	class Node
 	{
 	private:
@@ -58,56 +63,52 @@ namespace tinygraphdb
 		std::set<Arc *> _arc_out;
 
 	public:
+		// Constructor & destructor //
 		Node () {};
 		explicit Node (const int & unique_id, const std::string & type, const std::map<std::string, std::string> & properties):_unique_id(unique_id), _type(type), _properties(properties) {};
 		~Node () {};
 
+		// Adders //
 		void addArcIn (Arc * in) {_arc_in.insert(in);};
 		void addArcOut (Arc * out) {_arc_out.insert(out);};
 		void addProperty (const std::string & property, const std::string & value) {_properties[property] = value;};
 		
 		// Getters //
-		const int & unique_id () const {return _unique_id;};
-		const std::string & type () const {return _type;};
-		const std::string & property (const std::string & property) const
-		{
-			if (_properties.find(property) == _properties.end()) {
-				std::stringstream error_message;
-				error_message << "Property \"" << property << "\" not found in node << " << unique_id() << "\n";
-				throw std::runtime_error(error_message.str());
-			}
-			return _properties.find(property)->second;
-		};
-		const std::map<std::string, std::string> & properties () const {return _properties;};
-		const std::set<Arc *> & ArcIn () const {return _arc_in;};
-		const std::set<Arc *> & ArcOut () const {return _arc_out;};
+		const int & unique_id () const;
+		const std::string & type () const;
+		const std::string & property (const std::string & property) const;
+		const std::map<std::string, std::string> & properties () const;
+		const std::set<Arc *> & ArcIn () const;
+		const std::set<Arc *> & ArcOut () const;
 		
 		std::set<Arc *> getArcInOfType(const std::string & type);
 		std::set<Arc *> getArcOutOfType(const std::string & type);
 		
-		void changeType (std::string type){_type = type;};
+		std::set<Node *> getNodeFromArcOfType (std::string type);
 		
+		// Checkers //
 		bool hasArcOfType (std::string type);
 		bool hasArcOfTypeToNode (std::string type, Node * node);
-		std::set<Node *> getNodeFromArcOfType (std::string type);
 		bool hasProp (const std::string & prop_name, const std::string & prop_value);
-		bool hasProp (const std::string & prop_name) {return _properties.find(prop_name) != _properties.end();};
+		bool hasProp (const std::string & prop_name);
 		
+		// Printers //
 		void print();
 		void printFull();
 		void print (std::ofstream & outfile);
 	};
 
-	/*
+	
+	/*******************************************************************************
 	 * Arc Class
 	 *
 	 * _unique_id : An arc is uniquely identified by its _unique_id
 	 * _type      : An arc has a type which will be used to check policy
 	 * _properties: An arc has properties (pairs of strings)
-	 * _from_node : An arc has an input node
-	 * _to_node   : An arc has an output node
+	 * _from_node : An arc has an input node (only one)
+	 * _to_node   : An arc has an output node (only one)
 	 *
-	 */
+	 *******************************************************************************/
 	class Arc
 	{
 	private:
@@ -118,33 +119,29 @@ namespace tinygraphdb
 		Node * _to_node;
 		
 	public:
+		// Constructor & destructor //
 		Arc () {};
 		explicit Arc (const std::string & unique_id, const std::string & type, const std::map<std::string, std::string> & properties, Node * from, Node * to):_unique_id(unique_id), _type(type), _properties(properties), _from_node(from), _to_node(to) {};
 		~Arc () {};
 
-		void addProperty (const std::string & property, const std::string & value) {_properties[property] = value;};
+		// Adders //
+		void addProperty (const std::string & property, const std::string & value);
 		
 		// Getters //
-		const std::string & unique_id () const {return _unique_id;};
-		const std::string & type () const {return _type;};
-		const std::string property (const std::string & property) const
-		{
-			if (_properties.find(property) == _properties.end()) {
-				std::stringstream error_message;
-				error_message << "Property \"" << property << "\" not found in node << " << unique_id() << "\n";
-				throw std::runtime_error(error_message.str());
-			}
-			return _properties.find(property)->second;
-		};
-		const std::map<std::string, std::string> & properties () const {return _properties;};
-		Node * fromNode () {return _from_node;};
-		Node * toNode () {return _to_node;};
+		const std::string & unique_id () const;
+		const std::string & type () const;
+		const std::string property (const std::string & property) const;
+		const std::map<std::string, std::string> & properties () const;
+		Node * fromNode ();
+		Node * toNode ();
 		
+		// Printers //
 		void print();
 		void print (std::ofstream & outfile);
 	};
 
-	/*
+	
+	/*******************************************************************************
 	 * Policy class
 	 *
 	 * _node_type : A policy defines the available node types (wrong types are ignored)
@@ -154,7 +151,7 @@ namespace tinygraphdb
 	 *                                   from a node type to a node type through an
 	 *                                   arc_type
 	 *
-	 */
+	 *******************************************************************************/
 	class Policy
 	{
 	private:
@@ -166,25 +163,30 @@ namespace tinygraphdb
 		std::vector<std::string> _to_type;
 
 	public:
-		void addNodeType (std::string type) {_node_type.insert(type);};
-		void addArcType  (std::string type) {_arc_type.insert(type);};
-
-		const std::set<std::string> & getNodetype () const {return _node_type;};
-		
-		bool isNodeType (std::string type) {return _node_type.find(type) != _node_type.end();};
-		bool isArcType  (std::string type) {return _arc_type.find(type) != _arc_type.end();};
-		
+		// Adders //
+		void addNodeType (std::string type);
+		void addArcType  (std::string type);
 		void addConstraint (std::string from_type, std::string arc_link, std::string to_type);
-		bool isValid       (std::string from_type, std::string arc_link, std::string to_type);
 		
+		// Getters //
+		const std::set<std::string> & getNodetype () const;
+		
+		// Checkers //
+		bool isNodeType (std::string type);
+		bool isArcType (std::string type);
+		bool isValid (std::string from_type, std::string arc_link, std::string to_type);
+		
+		// Printers //
 		void print ();
 		void print (std::ofstream & outfile);
+		
+		// Readers //
 		void read (std::string fname);
 	};
 	
-	/*
-	 * Interface to the graph database
-	 */
+	/*******************************************************************************
+	 * Interface to the graph database (not used yet)
+	 *******************************************************************************/
 	class GraphDbInterface
 	{
 	public:
@@ -192,12 +194,11 @@ namespace tinygraphdb
 		virtual ~GraphDbInterface () {};
 		
 		virtual int newNode (const std::string & type, const std::map<std::string, std::string> & properties) = 0;
-		virtual void addNode (const int & unique_id, const std::string & type, const std::map<std::string, std::string> & properties) = 0;
+		virtual void newNodeWithId (const int & unique_id, const std::string & type, const std::map<std::string, std::string> & properties) = 0;
 		virtual void addArc  (const int & from_id, const std::string & type, const int & to_id, const std::map<std::string, std::string> & properties) = 0;
 		
 		virtual Node * getNode (int node_id) = 0;
 		virtual std::set<Node *> getNodesOfType (std::string type) = 0;
-		virtual std::set<Node *> getAllNodes (const std::string & constraint) = 0;
 		
 		virtual int nbNode() = 0;
 		
@@ -206,7 +207,7 @@ namespace tinygraphdb
 	};
 
 	
-	/*
+	/*******************************************************************************
 	 * GraphDb Class
 	 *
 	 * _policy : A graphdb defines a policy to check type consistency
@@ -215,7 +216,7 @@ namespace tinygraphdb
 	 *
 	 * For quick search, it also contains:
 	 * _types : types to set of id
-	 */
+	 *******************************************************************************/
 	class GraphDb : public GraphDbInterface
 	{
 	private:
@@ -227,20 +228,24 @@ namespace tinygraphdb
 		std::map<std::string, std::set<int> > _node_types;
 		std::map<std::string, std::map<std::string, std::set<int> > > _props;
 		
+		// Private readers
 		void readNode (std::string line);
-		void readArc  (std::string line);
+		void readArc (std::string line);
 		std::map<std::string, std::string> readProperties (std::string line);
 		
 	public:
+		// Constructor & destructor //
 		explicit GraphDb (Policy policy): _policy(policy) {};
 		explicit GraphDb (std::string fname);
 		~GraphDb () {};
 		
-		// Adders check consistency on the defined policy //
+		// Adders //
 		int newNode (const std::string & type, const std::map<std::string, std::string> & properties);
-		void addNode (const int & unique_id, const std::string & type, const std::map<std::string, std::string> & properties);
+		void newNodeWithId (const int & unique_id, const std::string & type, const std::map<std::string, std::string> & properties);
 		void addArc  (const int & from_id, const std::string & type, const int & to_id, const std::map<std::string, std::string> & properties);
 		
+		// Getters //
+		std::set<Node *> allNodes ();
 		Node * getNode (int node_id);
 		std::set<Node *> getNodesOfType (std::string type);
 		
@@ -250,14 +255,11 @@ namespace tinygraphdb
 		std::set<Node *> getNodesOfTypeWithProperty (std::string type, std::string prop_name);
 		std::set<Node *> getNodesOfTypeWithProperty (std::string type, std::string prop_name, std::string prop_value);
 		
-		std::set<Node *> getAllNodes (const std::string & constraint);
-		std::set<Node *> allNodes ();
-		const Policy & policy () const {return _policy;};
+		const Policy & policy () const;
+		int nbNode ();
+		int nbArc ();
 		
-		std::set<Node *> findSimilarNodes(Node * node);
-		
-		int nbNode () {return (int) _nodes.size();};
-		
+		// Printers //
 		void save (std::string fname);
 		void print();
 	};
