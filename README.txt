@@ -5,7 +5,7 @@ but I don't know what are the needs for other projects.
 
 Feel free to participate !
 
-In version 1.0, you can create a graph database with nodes and arcs (vertex and edges) under a given policy. The policy defines the types of nodes (strictly) and the type of arc between two nodes.
+In version 1.0.1, you can create a graph database with nodes and arcs (vertex and edges) under a given policy. The policy defines the types of nodes (strictly) and the type of arc between two nodes.
 
 Example:
 
