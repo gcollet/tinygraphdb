@@ -833,15 +833,13 @@ std::set<Node *> GraphDb :: getNodesOfTypeWithProperty (std::string type, std::s
 std::set<Node *> GraphDb :: getNodesOfTypeWithProperty (std::string type, std::string prop_name, std::string prop_value)
 {
 	std::set<Node *> nodes;
-	if (_node_types.find(type) == _node_types.end()) {
-		std::stringstream error_message;
-		error_message << "Cannot find node with type (" << type << ")";
-		throw std::runtime_error(error_message.str());
-	}
-	std::set<int> & node_set = _node_types[type];
-	for (std::set<int>::iterator it = node_set.begin(); it != node_set.end(); it++) {
-		if (_nodes[*it].hasProp(prop_name, prop_value)) {
-			nodes.insert(&_nodes[*it]);
+	if (_props.find(prop_name) != _props.end()) {
+		if (_props[prop_name].find(prop_value) != _props[prop_name].end()) {
+			for (std::set<int>::iterator it = _props[prop_name][prop_value].begin(); it != _props[prop_name][prop_value].end(); it++) {
+				if (_nodes[*it].type().compare(type) == 0) {
+					nodes.insert(&_nodes[*it]);
+				}
+			}
 		}
 	}
 	return nodes;
