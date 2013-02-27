@@ -786,9 +786,7 @@ std::set<Node *> GraphDb :: allNodes ()
 Node * GraphDb :: getNode (int node_id)
 {
 	if (_nodes.find(node_id) == _nodes.end()) {
-		std::stringstream error_message;
-		error_message << "Cannot find node with id " << node_id;
-		throw std::runtime_error(error_message.str());
+		return NULL;
 	}
 	return &_nodes[node_id];
 }
@@ -797,17 +795,12 @@ Node * GraphDb :: getNode (int node_id)
 std::set<Node *> GraphDb :: getNodesOfType (std::string type)
 {
 	std::set<Node *> nodes;
-	if (_node_types.find(type) == _node_types.end()) {
-		std::stringstream error_message;
-		error_message << "Cannot find node with type (" << type << ")";
-		throw std::runtime_error(error_message.str());
+	if (_node_types.find(type) != _node_types.end()) {
+		std::set<int> & node_set = _node_types[type];
+		for (std::set<int>::iterator it = node_set.begin(); it != node_set.end(); it++) {
+			nodes.insert(&_nodes[*it]);
+		}
 	}
-	
-	std::set<int> & node_set = _node_types[type];
-	for (std::set<int>::iterator it = node_set.begin(); it != node_set.end(); it++) {
-		nodes.insert(&_nodes[*it]);
-	}
-	
 	return nodes;
 }
 
@@ -815,15 +808,12 @@ std::set<Node *> GraphDb :: getNodesOfType (std::string type)
 std::set<Node *> GraphDb :: getNodesOfTypeWithProperty (std::string type, std::string prop_name)
 {
 	std::set<Node *> nodes;
-	if (_node_types.find(type) == _node_types.end()) {
-		std::stringstream error_message;
-		error_message << "Cannot find node with type (" << type << ")";
-		throw std::runtime_error(error_message.str());
-	}
-	std::set<int> & node_set = _node_types[type];
-	for (std::set<int>::iterator it = node_set.begin(); it != node_set.end(); it++) {
-		if (_nodes[*it].hasProp(prop_name)) {
-			nodes.insert(&_nodes[*it]);
+	if (_node_types.find(type) != _node_types.end()) {
+		std::set<int> & node_set = _node_types[type];
+		for (std::set<int>::iterator it = node_set.begin(); it != node_set.end(); it++) {
+			if (_nodes[*it].hasProp(prop_name)) {
+				nodes.insert(&_nodes[*it]);
+			}
 		}
 	}
 	return nodes;
