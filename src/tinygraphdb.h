@@ -25,6 +25,7 @@
 #ifndef __tinyGraphDb__graph__
 #define __tinyGraphDb__graph__
 
+#include <stdlib.h>
 #include <stdexcept>
 #include <iostream>
 #include <utility>
