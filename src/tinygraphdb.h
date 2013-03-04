@@ -1,5 +1,5 @@
 /* 
- * Tinygraphdb version 1.0.1
+ * Tinygraphdb version 1.0.2
  *
  * Copyright (c) 2010 Guillaume Collet
  *
@@ -25,6 +25,7 @@
 #ifndef __tinyGraphDb__graph__
 #define __tinyGraphDb__graph__
 
+#include <stdlib.h>
 #include <stdexcept>
 #include <iostream>
 #include <utility>
