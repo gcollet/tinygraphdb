@@ -86,6 +86,8 @@ namespace tinygraphdb
 		std::set<Arc *> getArcOutOfType(const std::string & type);
 		
 		std::set<Node *> getNodeFromArcOfType (std::string type);
+		std::set<Node *> getNodeFromArcOutOfType (std::string type);
+		std::set<Node *> getNodeFromArcInOfType (std::string type);
 		
 		// Checkers //
 		bool hasArcOfType (std::string type);

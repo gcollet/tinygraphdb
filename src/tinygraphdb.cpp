@@ -206,7 +206,7 @@ std::set<Arc *> Node :: getArcOutOfType(const std::string & type)
 	return tmp_arcs;
 }
 
-// Return the set of nodes at the end of output arcs of the given type
+// Return the set of nodes at the end of arcs of the given type
 std::set<Node *> Node :: getNodeFromArcOfType (std::string type)
 {
 	std::set<Node *> out_node;
@@ -214,6 +214,26 @@ std::set<Node *> Node :: getNodeFromArcOfType (std::string type)
 		if ((*it)->type().compare(type) == 0)
 			out_node.insert((*it)->toNode());
 	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++)
+		if ((*it)->type().compare(type) == 0)
+			out_node.insert((*it)->toNode());
+	return out_node;
+}
+
+// Return the set of nodes at the end of output arcs of the given type
+std::set<Node *> Node :: getNodeFromArcOutOfType (std::string type)
+{
+	std::set<Node *> out_node;
+	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++)
+		if ((*it)->type().compare(type) == 0)
+			out_node.insert((*it)->toNode());
+	return out_node;
+}
+
+// Return the set of nodes at the end of input arcs of the given type
+std::set<Node *> Node :: getNodeFromArcInOfType (std::string type)
+{
+	std::set<Node *> out_node;
+	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++)
 		if ((*it)->type().compare(type) == 0)
 			out_node.insert((*it)->toNode());
 	return out_node;
