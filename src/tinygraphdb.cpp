@@ -235,7 +235,7 @@ std::set<Node *> Node :: getNodeFromArcInOfType (std::string type)
 	std::set<Node *> out_node;
 	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++)
 		if ((*it)->type().compare(type) == 0)
-			out_node.insert((*it)->toNode());
+			out_node.insert((*it)->fromNode());
 	return out_node;
 }
 
