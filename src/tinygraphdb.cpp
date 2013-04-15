@@ -1,5 +1,5 @@
 /*
- * Tinygraphdb version 1.0.2
+ * Tinygraphdb version 1.1
  *
  * Copyright (c) 2010 Guillaume Collet
  *
@@ -206,7 +206,7 @@ std::set<Arc *> Node :: getArcOutOfType(const std::string & type)
 	return tmp_arcs;
 }
 
-// Return the set of nodes at the end of output arcs of the given type
+// Return the set of nodes at the end of arcs of the given type
 std::set<Node *> Node :: getNodeFromArcOfType (std::string type)
 {
 	std::set<Node *> out_node;
@@ -216,6 +216,26 @@ std::set<Node *> Node :: getNodeFromArcOfType (std::string type)
 	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++)
 		if ((*it)->type().compare(type) == 0)
 			out_node.insert((*it)->toNode());
+	return out_node;
+}
+
+// Return the set of nodes at the end of output arcs of the given type
+std::set<Node *> Node :: getNodeFromArcOutOfType (std::string type)
+{
+	std::set<Node *> out_node;
+	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++)
+		if ((*it)->type().compare(type) == 0)
+			out_node.insert((*it)->toNode());
+	return out_node;
+}
+
+// Return the set of nodes at the end of input arcs of the given type
+std::set<Node *> Node :: getNodeFromArcInOfType (std::string type)
+{
+	std::set<Node *> out_node;
+	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++)
+		if ((*it)->type().compare(type) == 0)
+			out_node.insert((*it)->fromNode());
 	return out_node;
 }
 
@@ -786,9 +806,7 @@ std::set<Node *> GraphDb :: allNodes ()
 Node * GraphDb :: getNode (int node_id)
 {
 	if (_nodes.find(node_id) == _nodes.end()) {
-		std::stringstream error_message;
-		error_message << "Cannot find node with id " << node_id;
-		throw std::runtime_error(error_message.str());
+		return NULL;
 	}
 	return &_nodes[node_id];
 }
@@ -797,17 +815,12 @@ Node * GraphDb :: getNode (int node_id)
 std::set<Node *> GraphDb :: getNodesOfType (std::string type)
 {
 	std::set<Node *> nodes;
-	if (_node_types.find(type) == _node_types.end()) {
-		std::stringstream error_message;
-		error_message << "Cannot find node with type (" << type << ")";
-		throw std::runtime_error(error_message.str());
+	if (_node_types.find(type) != _node_types.end()) {
+		std::set<int> & node_set = _node_types[type];
+		for (std::set<int>::iterator it = node_set.begin(); it != node_set.end(); it++) {
+			nodes.insert(&_nodes[*it]);
+		}
 	}
-	
-	std::set<int> & node_set = _node_types[type];
-	for (std::set<int>::iterator it = node_set.begin(); it != node_set.end(); it++) {
-		nodes.insert(&_nodes[*it]);
-	}
-	
 	return nodes;
 }
 
@@ -815,15 +828,12 @@ std::set<Node *> GraphDb :: getNodesOfType (std::string type)
 std::set<Node *> GraphDb :: getNodesOfTypeWithProperty (std::string type, std::string prop_name)
 {
 	std::set<Node *> nodes;
-	if (_node_types.find(type) == _node_types.end()) {
-		std::stringstream error_message;
-		error_message << "Cannot find node with type (" << type << ")";
-		throw std::runtime_error(error_message.str());
-	}
-	std::set<int> & node_set = _node_types[type];
-	for (std::set<int>::iterator it = node_set.begin(); it != node_set.end(); it++) {
-		if (_nodes[*it].hasProp(prop_name)) {
-			nodes.insert(&_nodes[*it]);
+	if (_node_types.find(type) != _node_types.end()) {
+		std::set<int> & node_set = _node_types[type];
+		for (std::set<int>::iterator it = node_set.begin(); it != node_set.end(); it++) {
+			if (_nodes[*it].hasProp(prop_name)) {
+				nodes.insert(&_nodes[*it]);
+			}
 		}
 	}
 	return nodes;
@@ -833,15 +843,13 @@ std::set<Node *> GraphDb :: getNodesOfTypeWithProperty (std::string type, std::s
 std::set<Node *> GraphDb :: getNodesOfTypeWithProperty (std::string type, std::string prop_name, std::string prop_value)
 {
 	std::set<Node *> nodes;
-	if (_node_types.find(type) == _node_types.end()) {
-		std::stringstream error_message;
-		error_message << "Cannot find node with type (" << type << ")";
-		throw std::runtime_error(error_message.str());
-	}
-	std::set<int> & node_set = _node_types[type];
-	for (std::set<int>::iterator it = node_set.begin(); it != node_set.end(); it++) {
-		if (_nodes[*it].hasProp(prop_name, prop_value)) {
-			nodes.insert(&_nodes[*it]);
+	if (_props.find(prop_name) != _props.end()) {
+		if (_props[prop_name].find(prop_value) != _props[prop_name].end()) {
+			for (std::set<int>::iterator it = _props[prop_name][prop_value].begin(); it != _props[prop_name][prop_value].end(); it++) {
+				if (_nodes[*it].type().compare(type) == 0) {
+					nodes.insert(&_nodes[*it]);
+				}
+			}
 		}
 	}
 	return nodes;
