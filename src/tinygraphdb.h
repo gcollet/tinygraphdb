@@ -262,12 +262,14 @@ namespace tinygraphdb
 		const Policy & policy () const;
 		int nbNode ();
 		int nbArc ();
-		
+				
 		// Printers //
 		void save (std::string fname);
 		void print();
 	};
 
+	void sigmaAlign (const GraphDb & graph_db_1, const GraphDb & graph_db_2, const std::vector<std::string> & onto_1, const std::vector<std::string> & onto_2, std::map<int,int> & alignment);
+	
 } // namespace tinygraphdb
 
 #endif
