@@ -172,7 +172,11 @@ namespace tinygraphdb
 		void addConstraint (std::string from_type, std::string arc_link, std::string to_type);
 		
 		// Getters //
-		const std::set<std::string> & getNodetype () const;
+		const std::set<std::string> & getNodeType () const;
+		const std::set<std::string> & getArcType () const;
+		const std::vector<std::string> & getFromType () const;
+		const std::vector<std::string> & getToType () const;
+		const std::vector<std::string> & getLinkType () const;
 		
 		// Checkers //
 		bool isNodeType (std::string type);

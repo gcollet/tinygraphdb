@@ -443,9 +443,33 @@ void Policy :: addConstraint (std::string from_type, std::string arc_link, std::
 }
 
 // Return the list of node types
-const std::set<std::string> & Policy :: getNodetype () const
+const std::set<std::string> & Policy :: getNodeType () const
 {
 	return _node_type;
+}
+
+// Return the list of arc types
+const std::set<std::string> & Policy :: getArcType () const
+{
+	return _arc_type;
+}
+
+// Return the list of from_node types
+const std::vector<std::string> & Policy :: getFromType () const
+{
+	return _from_type;
+}
+
+// Return the list of to_node types
+const std::vector<std::string> & Policy :: getToType () const
+{
+	return _to_type;
+}
+
+// Return the list of arc_link types
+const std::vector<std::string> & Policy :: getLinkType () const
+{
+	return _arc_link;
 }
 
 // Check the existence of the given node type
