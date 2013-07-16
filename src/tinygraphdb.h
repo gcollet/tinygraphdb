@@ -37,6 +37,8 @@
 #include <set>
 
 void rem_spaces(std::string & str);
+void rem_tab(std::string & str);
+std::vector<std::string> chomp_line (const std::string & line, char sep);
 
 namespace tinygraphdb
 {
