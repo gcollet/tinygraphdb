@@ -30,6 +30,20 @@ using namespace tinygraphdb;
  * Basic parsing functions
  *******************************************************************************/
 
+std::vector<std::string> chomp_line (const std::string & line, char sep)
+{
+	std::vector<std::string> list;
+	int beg = 0;
+	int end = (int) line.find(sep,beg);
+	while (end <= line.size()) {
+		list.push_back(line.substr(beg,end - beg));
+		beg = end + 1;
+		end = (int) line.find(sep,beg);
+	}
+	list.push_back(line.substr(beg));
+	return list;
+}
+
 // Test if a string is an integer //
 bool is_int(const std::string & s)
 {
@@ -48,6 +62,20 @@ void rem_spaces(std::string & str)
 	while (str[end] == ' ') end--;
 	str = str.substr(0,end + 1);
 }
+
+// Remove tabulations inside a std::string //
+void rem_tab(std::string & str)
+{
+	std::string::iterator it = str.begin();
+	while (it != str.end()) {
+		if (*it == '\t') {
+			it = str.erase(it);
+		} else {
+			it++;
+		}
+	}
+}
+
 
 // Read type in a string formed as follows: (type)id //
 std::string readType (std::string line)
@@ -277,15 +305,9 @@ bool Node :: hasProp (const std::string & prop_name)
 // Print the node on the stdout
 void Node :: print()
 {
-	std::cout << "(" << _type << ")" << _unique_id;
-	std::map<std::string, std::string>::iterator it = _properties.begin();
-	if (it != _properties.end()) {
-		std::cout << "{" << it->first << "=\"" << it->second << "\"";
-		it++;
-		for (; it != _properties.end(); it++) {
-			std::cout << ',' << it->first << "=\"" << it->second << "\"";
-		}
-		std::cout << "}";
+	std::cout << _type << "\t" << _unique_id;
+	for (std::map<std::string, std::string>::iterator it = _properties.begin(); it != _properties.end(); it++) {
+		std::cout << "\t" << it->first << "\t" << it->second;
 	}
 	std::cout << "\n";
 }
@@ -303,15 +325,9 @@ void Node :: printFull()
 // Print the node on the given stream
 void Node ::  print(std::ofstream & outfile)
 {
-	outfile << "(" << _type << ")" << _unique_id;
-	std::map<std::string, std::string>::iterator it = _properties.begin();
-	if (it != _properties.end()) {
-		outfile << "{" << it->first << "=\"" << it->second << "\"";
-		it++;
-		for (; it != _properties.end(); it++) {
-			outfile << ',' << it->first << "=\"" << it->second << "\"";
-		}
-		outfile << "}";
+	outfile << _type << "\t" << _unique_id;
+	for (std::map<std::string, std::string>::iterator it = _properties.begin(); it != _properties.end(); it++) {
+		outfile << "\t" << it->first << "\t" << it->second;
 	}
 	outfile << "\n";
 }
@@ -371,33 +387,21 @@ Node * Arc :: toNode ()
 // Print the arc on stdout
 void Arc :: print ()
 {
-	std::cout << _from_node->unique_id() << "->[(" << _type << ")";
-	std::map<std::string, std::string>::iterator it = _properties.begin();
-	if (it != _properties.end()) {
-		std::cout << "{" << it->first << "=\"" << it->second << "\"";
-		it++;
-		for (; it != _properties.end(); it++) {
-			std::cout << ',' << it->first << "=\"" << it->second << "\"";
-		}
-		std::cout << "}";
+	std::cout << _from_node->unique_id() << "\t" << _type << "\t" << _to_node->unique_id();
+	for (std::map<std::string, std::string>::iterator it = _properties.begin(); it != _properties.end(); it++) {
+		std::cout << "\t" << it->first << "\t" << it->second;
 	}
-	std::cout << "]->" << _to_node->unique_id() << "\n";
+	std::cout << "\n";
 }
 
 // Print the arc on the given stream
 void Arc :: print (std::ofstream & outfile)
 {
-	outfile << _from_node->unique_id() << "->[(" << _type << ")";
-	std::map<std::string, std::string>::iterator it = _properties.begin();
-	if (it != _properties.end()) {
-		outfile << "{" << it->first << "=\"" << it->second << "\"";
-		it++;
-		for (; it != _properties.end(); it++) {
-			outfile << ',' << it->first << "=\"" << it->second << "\"";
-		}
-		outfile << "}";
+	outfile << _from_node->unique_id() << "\t" << _type << "\t" << _to_node->unique_id();
+	for (std::map<std::string, std::string>::iterator it = _properties.begin(); it != _properties.end(); it++) {
+		outfile << "\t" << it->first << "\t" << it->second;
 	}
-	outfile << "]->" << _to_node->unique_id() << "\n";
+	outfile << "\n";
 }
 
 
@@ -438,9 +442,33 @@ void Policy :: addConstraint (std::string from_type, std::string arc_link, std::
 }
 
 // Return the list of node types
-const std::set<std::string> & Policy :: getNodetype () const
+const std::set<std::string> & Policy :: getNodeType () const
 {
 	return _node_type;
+}
+
+// Return the list of arc types
+const std::set<std::string> & Policy :: getArcType () const
+{
+	return _arc_type;
+}
+
+// Return the list of from_node types
+const std::vector<std::string> & Policy :: getFromType () const
+{
+	return _from_type;
+}
+
+// Return the list of to_node types
+const std::vector<std::string> & Policy :: getToType () const
+{
+	return _to_type;
+}
+
+// Return the list of arc_link types
+const std::vector<std::string> & Policy :: getLinkType () const
+{
+	return _arc_link;
 }
 
 // Check the existence of the given node type
@@ -471,7 +499,7 @@ void Policy :: print ()
 	for (std::set<std::string>::iterator it = _node_type.begin(); it != _node_type.end(); it++) {
 		for (int i = 0; i < _from_type.size(); i++) {
 			if ((*it).compare(_from_type[i]) == 0) {
-			std::cout << _from_type[i] << "->[" << _arc_link[i] << "]->" << _to_type[i] << "\n";
+			std::cout << _from_type[i] << "-\t" << _arc_link[i] << "\t" << _to_type[i] << "\n";
 			}
 		}
 	}
@@ -484,7 +512,7 @@ void Policy :: print (std::ofstream & outfile)
 	for (std::set<std::string>::iterator it = _node_type.begin(); it != _node_type.end(); it++) {
 		for (int i = 0; i < _from_type.size(); i++) {
 			if ((*it).compare(_from_type[i]) == 0) {
-				outfile << _from_type[i] << "->[" << _arc_link[i] << "]->" << _to_type[i] << "\n";
+				outfile << _from_type[i] << "\t" << _arc_link[i] << "\t" << _to_type[i] << "\n";
 			}
 		}
 	}
@@ -513,28 +541,22 @@ void Policy :: read (std::string fname)
 		if (pos >= 0 && pos < line.size()) {
 			line = line.substr(0, pos);
 		}
+		rem_spaces(line);
 		if (!line.empty()) {
-			rem_spaces(line);
-			if (line.compare("Database") == 0) {
+			if (line.compare("Nodes") == 0 || line.compare("Relations") == 0) {
 				break;
 			}
-			pos = (int) line.find("->[");
-			if (pos < 0 || pos >= line.size()) {
-				std::cerr << "Error in policy definition\n  This constraint is not well formed: " << line << "\n";
-				continue;
+			std::vector<std::string> line_element = chomp_line(line, '\t');
+			if (line_element.size() < 3) {
+				std::cerr << "A policy constraint contains 3 types: node_type, arc_type, node_type -> ignore " << line << "\n";
 			}
-			std::string from_type = line.substr(0,pos);
+			std::string from_type = line_element[0];
 			rem_spaces(from_type);
-			line = line.substr(pos+3);
-			pos = (int) line.find("]->");
-			if (pos < 0 || pos >= line.size()) {
-				std::cerr << "Error in policy definition\n  This constraint is not well formed: " << from_type << "->" << line << "\n";
-				continue;
-			}
-			std::string arc_type = line.substr(0,pos);
+			std::string arc_type = line_element[1];
 			rem_spaces(arc_type);
-			std::string to_type = line.substr(pos+3);
+			std::string to_type = line_element[2];
 			rem_spaces(to_type);
+			
 			addConstraint (from_type, arc_type, to_type);
 		}
 	}
@@ -549,30 +571,34 @@ void Policy :: read (std::string fname)
 void GraphDb :: readNode (std::string line)
 {
 	try {
-		int beg_prop = (int) line.find("{");
-		std::string node_def = line;
-		if (beg_prop >= 0 && beg_prop < line.size()) {
-			node_def = line.substr(0,beg_prop);
-		}
-		
-		// read node_type
-		std::string node_type = readType(node_def);
-		
-		// read node unique id
-		int node_id = readId(node_def);
-		
-		// Check if type and id empty
-		if (node_type.empty()) {
+		std::vector<std::string> line_element = chomp_line(line, '\t');
+		if (line_element.size() < 2) {
 			std::stringstream error_message;
-			error_message << "Type is empty";
+			error_message << "A node needs at least a type (string) and a unique identifier (int)";
 			throw std::runtime_error(error_message.str());
 		}
 		
+		// Read node type and unique id
+		std::vector<std::string>::iterator it = line_element.begin();
+		std::string node_type = *it;
+		rem_spaces(node_type);
+		it++;
+		int node_id = atoi((*it).c_str());
+		it++;
 		// read node properties
 		std::map<std::string, std::string> node_properties;
-		int end_prop = (int) line.rfind("}");
-		if (beg_prop >= 0 || beg_prop < line.size() || end_prop >= 0 || end_prop < line.size()) {
-			node_properties = readProperties (line.substr(beg_prop + 1, end_prop - beg_prop - 1));
+		for (; it != line_element.end(); it++) {
+			std::string prop_name = *it;
+			rem_spaces(prop_name);
+			it++;
+			if (it == line_element.end()) {
+				std::stringstream error_message;
+				error_message << "Cannot find property value in \'" << line << "\'";
+				throw std::runtime_error(error_message.str());
+			}
+			std::string prop_value = *it;
+			rem_spaces(prop_value);
+			node_properties[prop_name] = prop_value;
 		}
 		
 		// create the node
@@ -587,39 +613,38 @@ void GraphDb :: readNode (std::string line)
 void GraphDb :: readArc (std::string line)
 {
 	try {
-		// read from_node_def
-		int end_from = (int) line.find("->[");
-		if (end_from < 0 || end_from >= line.size()) {
+		std::vector<std::string> line_element = chomp_line(line, '\t');
+		if (line_element.size() < 3) {
 			std::stringstream error_message;
-			error_message << "Error: from_node is missing in arc definition: " << line;
+			error_message << "An arc needs at least an input node id (int), a type (string) and an ouput node id (int)";
 			throw std::runtime_error(error_message.str());
 		}
-		// read from type
-		//std::string from_type = readType(line.substr(0,end_from));
-		// read from id
-		int from_node_id = readId(line.substr(0,end_from));
 		
-		// read to_node_def
-		int beg_to = (int) line.find("]->") + 3;
-		if (beg_to < 0 || beg_to >= line.size()) {
-			std::stringstream error_message;
-			error_message << "Error: to_node is missing in arc definition: " << line;
-			throw std::runtime_error(error_message.str());
-		}
-		// read to type
-		//std::string to_type = readType(line.substr(beg_to));
-		// read from id
-		int to_node_id = readId(line.substr(beg_to));
+		// Read input id, arc type, output id
+		std::vector<std::string>::iterator it = line_element.begin();
+		int from_node_id = atoi((*it).c_str());
+		it++;
+		std::string arc_type = *it;
+		rem_spaces(arc_type);
+		it++;
+		int to_node_id = atoi((*it).c_str());
+		it++;
 		
-		// read arc type
-		std::string arc_type = readType(line.substr(end_from + 3, beg_to - end_from - 6));
 		
 		// Read arc properties
 		std::map<std::string, std::string> arc_properties;
-		int beg_prop = (int) line.find("{");
-		int end_prop = (int) line.find("}");
-		if (beg_prop >= 0 || beg_prop < line.size() || end_prop >= 0 || end_prop < line.size()) {
-			arc_properties = readProperties (line.substr(beg_prop + 1, end_prop - beg_prop - 1));
+		for (; it != line_element.end(); it++) {
+			std::string prop_name = *it;
+			rem_spaces(prop_name);
+			it++;
+			if (it == line_element.end()) {
+				std::stringstream error_message;
+				error_message << "Cannot find property value in \'" << line << "\'";
+				throw std::runtime_error(error_message.str());
+			}
+			std::string prop_value = *it;
+			rem_spaces(prop_value);
+			arc_properties[prop_name] = prop_value;
 		}
 		
 		// Add the arc to the database
@@ -630,35 +655,22 @@ void GraphDb :: readArc (std::string line)
 	}
 }
 
-// Read properties from a line : {prop="value",...}
+// Read properties from a line : prop	value	prop	value...
 std::map<std::string, std::string> GraphDb :: readProperties (std::string line)
 {
 	std::map<std::string, std::string> tmp_prop;
 	try {
-		while (!line.empty()) {
-			if (line[0] == ',') {
-				line = line.substr(1);
-			}
-			int pos = (int) line.find('"');
-			if (pos < 0 || pos >= line.size()) {
+		std::vector<std::string> line_element = chomp_line(line, '\t');
+		for (std::vector<std::string>::iterator it = line_element.begin(); it != line_element.end(); it++) {
+			std::string prop_name = *it;
+			it++;
+			if (it == line_element.end()) {
 				std::stringstream error_message;
 				error_message << "Cannot find property value in \'" << line << "\'";
 				throw std::runtime_error(error_message.str());
 			}
-			pos = (int) line.find('"', pos + 1);
-			if (pos < 0 || pos >= line.size()) {
-				std::stringstream error_message;
-				error_message << "Cannot find property value in \'" << line << "\'";
-				throw std::runtime_error(error_message.str());
-			}
-			
-			std::string sub = line.substr(0, pos + 1);
-			std::string prop_name = readPropName(sub);
-			std::string prop_value = readPropValue(sub);
-			if (!prop_name.empty() && !prop_value.empty()) {
-				tmp_prop[prop_name] = prop_value;
-			}
-			line = line.substr(pos + 1);
+			std::string prop_value = *it;
+			tmp_prop[prop_name] = prop_value;
 		}
 	} catch (std::exception & e) {
 		throw;
@@ -681,31 +693,36 @@ GraphDb :: GraphDb (std::string fname)
 	// Find the Database keyword to read the database //
 	getline(infile, line);
 	rem_spaces(line);
-	while(infile.good() && line.compare("Database") != 0) {
-		getline(infile, line);
-		rem_spaces(line);
-	}
+	bool in_db = false;
+	bool in_nodes = false;
+	bool in_rel = false;
 	while(infile.good()) {
 		getline(infile, line);
 		rem_spaces(line);
 		if (!line.empty() && line[0] != '#') {
 			rem_spaces(line);
-			if (line.compare("Policy") == 0) {
-				break;
-			}
-			int pos = (int) line.find("->[");
-			if (pos < 0 || pos >= line.size()) {
-				try {
-					readNode(line);
-				} catch (std::exception & e) {
-					std::cerr << "Read node: " << e.what() << " -> ignore node\n";
-				}
-			} else {
-				try {
-					readArc(line);
-				} catch (std::exception & e) {
-					std::cerr << "Read arc: " << e.what() << " -> ignore arc\n";
-				}
+			if (line.compare("Nodes") == 0) {
+				in_db = true;
+				in_nodes = true;
+				in_rel = false;
+			} else if (line.compare("Relations") == 0){
+				in_db = true;
+				in_rel = true;
+				in_nodes = false;
+			} else if (in_db) {
+				 if (in_nodes) {
+					try {
+						readNode(line);
+					} catch (std::exception & e) {
+						std::cerr << "Read node: " << e.what() << " -> ignore node\n";
+					}
+				 } else if (in_rel){
+					 try {
+						 readArc(line);
+					 } catch (std::exception & e) {
+						 std::cerr << "Read arc: " << e.what() << " -> ignore arc\n";
+					 }
+				 }
 			}
 		}
 	}
@@ -905,11 +922,11 @@ void GraphDb :: save (std::string fname)
 	outfile.open (fname.c_str());
 	
 	_policy.print(outfile);
-	outfile << "\nDatabase\n\n# Nodes\n\n";
+	outfile << "\nNodes\n\n";
 	for (std::map<int, Node>::iterator it = _nodes.begin(); it != _nodes.end(); it++) {
 		it->second.print(outfile);
 	}
-	outfile << "\n# Relations\n\n";
+	outfile << "\nRelations\n\n";
 	for (std::map<std::string, Arc>::iterator it = _arcs.begin(); it != _arcs.end(); it++) {
 		it->second.print(outfile);
 	}
@@ -920,11 +937,11 @@ void GraphDb :: save (std::string fname)
 void GraphDb :: print ()
 {
 	_policy.print();
-	std::cout << "\nDatabase\n\n# Nodes\n\n";
+	std::cout << "\nNodes\n\n";
 	for (std::map<int, Node>::iterator it = _nodes.begin(); it != _nodes.end(); it++) {
 		it->second.print();
 	}
-	std::cout << "\n# Relations\n\n";
+	std::cout << "\nRelations\n\n";
 	for (std::map<std::string, Arc>::iterator it = _arcs.begin(); it != _arcs.end(); it++) {
 		it->second.print();
 	}
