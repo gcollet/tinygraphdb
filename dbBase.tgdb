@@ -1,0 +1,44 @@
+Policy
+
+class	is a	class
+class	has name	name
+class	has xref	xref
+class	is in pathway	pathway
+
+compound	is a	class
+compound	has name	name
+compound	has xref	xref
+
+gene	is a	class
+gene	has name	name
+gene	has xref	xref
+gene	products	protein
+
+pathway	has xref	xref
+pathway	has name	name
+pathway	is a	class
+pathway	is in pathway	pathway
+
+protein	is a	class
+protein	has name	name
+protein	has xref	xref
+protein	catalyses	reaction
+protein	is in species	class
+
+reaction	is a	class
+reaction	is in pathway	pathway
+reaction	has name	name
+reaction	has xref	xref
+reaction	has left	class
+reaction	has right	class
+reaction	has left	protein
+reaction	has right	protein
+reaction	has left	compound
+reaction	has right	compound
+
+
+Nodes
+
+
+Relations
+

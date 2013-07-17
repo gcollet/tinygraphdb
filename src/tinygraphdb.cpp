@@ -1,7 +1,7 @@
 /*
- * Tinygraphdb version 1.1
+ * Tinygraphdb version 1.2
  *
- * Copyright (c) 2010 Guillaume Collet
+ * Copyright (c) 2012-2013 Guillaume Collet
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,8 +48,7 @@ std::vector<std::string> chomp_line (const std::string & line, char sep)
 bool is_int(const std::string & s)
 {
     std::string::const_iterator it = s.begin();
-    while (it != s.end() && std::isdigit(*it))
-		++it;
+    while (it != s.end() && std::isdigit(*it)) ++it;
     return !s.empty() && it == s.end();
 }
 
@@ -57,14 +56,10 @@ bool is_int(const std::string & s)
 void rem_spaces(std::string & str)
 {
 	int beg = 0;
-	while (str[beg] == ' ') {
-		beg++;
-	}
+	while (str[beg] == ' ') beg++;
 	str = str.substr(beg);
 	int end = (int)str.size() - 1;
-	while (str[end] == ' ') {
-		end--;
-	}
+	while (str[end] == ' ') end--;
 	str = str.substr(0,end + 1);
 }
 
@@ -240,7 +235,7 @@ std::set<Node *> Node :: getNodeFromArcOfType (std::string type)
 	std::set<Node *> out_node;
 	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++)
 		if ((*it)->type().compare(type) == 0)
-			out_node.insert((*it)->toNode());
+			out_node.insert((*it)->fromNode());
 	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++)
 		if ((*it)->type().compare(type) == 0)
 			out_node.insert((*it)->toNode());

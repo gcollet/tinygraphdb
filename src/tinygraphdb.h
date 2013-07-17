@@ -1,7 +1,7 @@
 /* 
- * Tinygraphdb version 1.1
+ * Tinygraphdb version 1.2
  *
- * Copyright (c) 2010 Guillaume Collet
+ * Copyright (c) 2012-2013 Guillaume Collet
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,8 @@ namespace tinygraphdb
 	 *
 	 * _unique_id  : A node is uniquely identified by its _unique_id
 	 * _type       : A node has a type which will be used to check policy
-	 * _properties : A node has properties (pairs of strings)
+	 * _properties : A node has properties (pairs of strings: name and value)
+	 *               Each property name is unique for a given node
 	 * _arc_in(out): A node has a set of output arcs and a set of input arcs
 	 *******************************************************************************/
 	class Node
