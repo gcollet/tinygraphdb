@@ -77,6 +77,10 @@ namespace tinygraphdb
 		void addArcOut (Arc * out) {_arc_out.insert(out);};
 		void addProperty (const std::string & property, const std::string & value) {_properties[property] = value;};
 		
+		// Eraser //
+		void eraseArcIn	(const std::string & arc_id);
+		void eraseArcOut (const std::string & arc_id);
+		
 		// Getters //
 		const int & unique_id () const;
 		const std::string & type () const;
@@ -264,6 +268,8 @@ namespace tinygraphdb
 		
 		std::set<Node *> getNodesOfTypeWithProperty (std::string type, std::string prop_name);
 		std::set<Node *> getNodesOfTypeWithProperty (std::string type, std::string prop_name, std::string prop_value);
+		
+		void eraseNode (int node_id);
 		
 		const Policy & policy () const;
 		int nbNode ();

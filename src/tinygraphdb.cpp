@@ -193,7 +193,30 @@ const std::map<std::string, std::string> & Node :: properties () const
 	return _properties;
 }
 
-// Return the set of input arcs 
+// Erase a given arc in
+void Node::eraseArcIn	(const std::string & arc_id)
+{
+	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++) {
+		if ((*it)->unique_id().compare(arc_id) == 0) {
+			_arc_in.erase(it);
+			return;
+		}
+	}
+}
+
+// Erase a given arc out
+void Node::eraseArcOut (const std::string & arc_id)
+{
+	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++) {
+		if ((*it)->unique_id().compare(arc_id) == 0) {
+			_arc_out.erase(it);
+			return;
+		}
+	}
+}
+
+
+// Return the set of input arcs
 const std::set<Arc *> & Node :: ArcIn () const
 {
 	return _arc_in;
@@ -893,6 +916,27 @@ std::set<Node *> GraphDb :: getNodesWithProperty (std::string prop_name, std::st
 		}
 	}
 	return nodes;
+}
+
+// Removes a node and the input and output arcs
+void GraphDb :: eraseNode (int node_id)
+{
+	if (_nodes.find(node_id) == _nodes.end()) {
+		Node & current_node = _nodes[node_id];
+		std::set<std::string> arc_to_remove;
+		for (std::set<Arc *>::const_iterator it = current_node.ArcIn().begin(); it != current_node.ArcIn().end(); it++) {
+			arc_to_remove.insert((*it)->unique_id());
+			_nodes[(*it)->fromNode()->unique_id()].eraseArcOut((*it)->unique_id());
+		}
+		for (std::set<Arc *>::const_iterator it = current_node.ArcOut().begin(); it != current_node.ArcOut().end(); it++) {
+			arc_to_remove.insert((*it)->unique_id());
+			_nodes[(*it)->toNode()->unique_id()].eraseArcIn((*it)->unique_id());
+		}
+		for (std::set<std::string>::iterator it = arc_to_remove.begin(); it != arc_to_remove.end(); it++) {
+			_arcs.erase(_arcs.find(*it));
+		}
+		_nodes.erase(_nodes.find(node_id));
+	}
 
 }
 
