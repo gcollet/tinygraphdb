@@ -177,7 +177,7 @@ const std::string & Node :: type () const
 }
 
 // Return the value of the given property  (throw an exception if it does not exist)
-const std::string & Node :: property (const std::string & property) const
+const std::set<std::string> & Node :: property (const std::string & property) const
 {
 	if (_properties.find(property) == _properties.end()) {
 		std::stringstream error_message;
@@ -188,12 +188,35 @@ const std::string & Node :: property (const std::string & property) const
 };
 
 // Return all the properties of the node
-const std::map<std::string, std::string> & Node :: properties () const
+const std::map<std::string, std::set<std::string> > & Node :: properties () const
 {
 	return _properties;
 }
 
-// Return the set of input arcs 
+// Erase a given arc in
+void Node::eraseArcIn	(const std::string & arc_id)
+{
+	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++) {
+		if ((*it)->unique_id().compare(arc_id) == 0) {
+			_arc_in.erase(it);
+			return;
+		}
+	}
+}
+
+// Erase a given arc out
+void Node::eraseArcOut (const std::string & arc_id)
+{
+	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++) {
+		if ((*it)->unique_id().compare(arc_id) == 0) {
+			_arc_out.erase(it);
+			return;
+		}
+	}
+}
+
+
+// Return the set of input arcs
 const std::set<Arc *> & Node :: ArcIn () const
 {
 	return _arc_in;
@@ -291,7 +314,7 @@ bool Node :: hasArcOfTypeToNode (std::string type, Node * node)
 bool Node :: hasProp (const std::string & prop_name, const std::string & prop_value)
 {
 	if (_properties.find(prop_name) != _properties.end()) {
-		return _properties[prop_name].compare(prop_value) == 0;
+		return _properties[prop_name].find(prop_value) != _properties[prop_name].end();
 	}
 	return false;
 }
@@ -306,8 +329,10 @@ bool Node :: hasProp (const std::string & prop_name)
 void Node :: print()
 {
 	std::cout << _type << "\t" << _unique_id;
-	for (std::map<std::string, std::string>::iterator it = _properties.begin(); it != _properties.end(); it++) {
-		std::cout << "\t" << it->first << "\t" << it->second;
+	for (std::map<std::string, std::set<std::string> >::iterator it_name = _properties.begin(); it_name != _properties.end(); it_name++) {
+		for (std::set<std::string>::iterator it_value = it_name->second.begin(); it_value != it_name->second.end(); it_value++) {
+			std::cout << "\t" << it_name->first << "\t" << *it_value;
+		}
 	}
 	std::cout << "\n";
 }
@@ -326,8 +351,10 @@ void Node :: printFull()
 void Node ::  print(std::ofstream & outfile)
 {
 	outfile << _type << "\t" << _unique_id;
-	for (std::map<std::string, std::string>::iterator it = _properties.begin(); it != _properties.end(); it++) {
-		outfile << "\t" << it->first << "\t" << it->second;
+	for (std::map<std::string, std::set<std::string> >::iterator it_name = _properties.begin(); it_name != _properties.end(); it_name++) {
+		for (std::set<std::string>::iterator it_value = it_name->second.begin(); it_value != it_name->second.end(); it_value++) {
+			outfile << "\t" << it_name->first << "\t" << *it_value;
+		}
 	}
 	outfile << "\n";
 }
@@ -336,12 +363,6 @@ void Node ::  print(std::ofstream & outfile)
 /*******************************************************************************
  * Arc methods
  *******************************************************************************/
-
-// Add a property to the arc
-void Arc :: addProperty (const std::string & property, const std::string & value)
-{
-	_properties[property] = value;
-}
 
 // Return the unique id of the arc
 const std::string & Arc :: unique_id () const
@@ -356,7 +377,7 @@ const std::string & Arc :: type () const
 }
 
 // Return the value of the given property (throw an exception if it does not exist)
-const std::string Arc :: property (const std::string & property) const
+const std::set<std::string> & Arc :: property (const std::string & property) const
 {
 	if (_properties.find(property) == _properties.end()) {
 		std::stringstream error_message;
@@ -367,7 +388,7 @@ const std::string Arc :: property (const std::string & property) const
 }
 
 // Return all the properties of the arc
-const std::map<std::string, std::string> & Arc :: properties () const
+const std::map<std::string, std::set<std::string> > & Arc :: properties () const
 {
 	return _properties;
 }
@@ -388,8 +409,10 @@ Node * Arc :: toNode ()
 void Arc :: print ()
 {
 	std::cout << _from_node->unique_id() << "\t" << _type << "\t" << _to_node->unique_id();
-	for (std::map<std::string, std::string>::iterator it = _properties.begin(); it != _properties.end(); it++) {
-		std::cout << "\t" << it->first << "\t" << it->second;
+	for (std::map<std::string, std::set<std::string> >::iterator it_name = _properties.begin(); it_name != _properties.end(); it_name++) {
+		for (std::set<std::string>::iterator it_value = it_name->second.begin(); it_value != it_name->second.end(); it_value++) {
+			std::cout << "\t" << it_name->first << "\t" << *it_value;
+		}
 	}
 	std::cout << "\n";
 }
@@ -398,8 +421,10 @@ void Arc :: print ()
 void Arc :: print (std::ofstream & outfile)
 {
 	outfile << _from_node->unique_id() << "\t" << _type << "\t" << _to_node->unique_id();
-	for (std::map<std::string, std::string>::iterator it = _properties.begin(); it != _properties.end(); it++) {
-		outfile << "\t" << it->first << "\t" << it->second;
+	for (std::map<std::string, std::set<std::string> >::iterator it_name = _properties.begin(); it_name != _properties.end(); it_name++) {
+		for (std::set<std::string>::iterator it_value = it_name->second.begin(); it_value != it_name->second.end(); it_value++) {
+			outfile << "\t" << it_name->first << "\t" << *it_value;
+		}
 	}
 	outfile << "\n";
 }
@@ -586,7 +611,7 @@ void GraphDb :: readNode (std::string line)
 		int node_id = atoi((*it).c_str());
 		it++;
 		// read node properties
-		std::map<std::string, std::string> node_properties;
+		std::map<std::string, std::set<std::string> > node_properties;
 		for (; it != line_element.end(); it++) {
 			std::string prop_name = *it;
 			rem_spaces(prop_name);
@@ -598,7 +623,7 @@ void GraphDb :: readNode (std::string line)
 			}
 			std::string prop_value = *it;
 			rem_spaces(prop_value);
-			node_properties[prop_name] = prop_value;
+			node_properties[prop_name].insert(prop_value);
 		}
 		
 		// create the node
@@ -632,7 +657,7 @@ void GraphDb :: readArc (std::string line)
 		
 		
 		// Read arc properties
-		std::map<std::string, std::string> arc_properties;
+		std::map<std::string, std::set<std::string> > arc_properties;
 		for (; it != line_element.end(); it++) {
 			std::string prop_name = *it;
 			rem_spaces(prop_name);
@@ -644,7 +669,7 @@ void GraphDb :: readArc (std::string line)
 			}
 			std::string prop_value = *it;
 			rem_spaces(prop_value);
-			arc_properties[prop_name] = prop_value;
+			arc_properties[prop_name].insert(prop_value);
 		}
 		
 		// Add the arc to the database
@@ -730,7 +755,7 @@ GraphDb :: GraphDb (std::string fname)
 }
 
 // Create a node of given type with the given properties and return its unique id
-int GraphDb :: newNode (const std::string & type, const std::map<std::string, std::string> & properties)
+int GraphDb :: newNode (const std::string & type, const std::map<std::string, std::set<std::string> > & properties)
 {
 	if (!_policy.isNodeType(type)) {
 		std::stringstream error_message;
@@ -745,14 +770,16 @@ int GraphDb :: newNode (const std::string & type, const std::map<std::string, st
 	}
 	_nodes[unique_id] = Node(unique_id, type, properties);
 	_node_types[type].insert(unique_id);
-	for (std::map<std::string, std::string>::const_iterator it = properties.begin(); it != properties.end(); it++) {
-		_props[it->first][it->second].insert(unique_id);
+	for (std::map<std::string, std::set<std::string> >::const_iterator it_name = properties.begin(); it_name != properties.end(); it_name++) {
+		for (std::set<std::string>::iterator it_value = it_name->second.begin(); it_value != it_name->second.end(); it_value++) {
+			_props[it_name->first][*it_value].insert(unique_id);
+		}
 	}
 	return unique_id;
 }
 
 // Create a node of the given type with the given unique id and the given properties
-void GraphDb :: newNodeWithId(const int & unique_id, const std::string & type, const std::map<std::string, std::string> & properties)
+void GraphDb :: newNodeWithId(const int & unique_id, const std::string & type, const std::map<std::string, std::set<std::string> > & properties)
 {
 	if (!_policy.isNodeType(type)) {
 		std::stringstream error_message;
@@ -762,14 +789,16 @@ void GraphDb :: newNodeWithId(const int & unique_id, const std::string & type, c
 	if (_nodes.find(unique_id) == _nodes.end()) {
 		_nodes[unique_id] = Node(unique_id, type, properties);
 		_node_types[type].insert(unique_id);
-		for (std::map<std::string, std::string>::const_iterator it = properties.begin(); it != properties.end(); it++) {
-			_props[it->first][it->second].insert(unique_id);
+		for (std::map<std::string, std::set<std::string> >::const_iterator it_name = properties.begin(); it_name != properties.end(); it_name++) {
+			for (std::set<std::string>::iterator it_value = it_name->second.begin(); it_value != it_name->second.end(); it_value++) {
+				_props[it_name->first][*it_value].insert(unique_id);
+			}
 		}
 	}
 }
 
 // Add an arc from from_id to to_id with the given type and the given properties
-void GraphDb :: addArc  (const int & from_id, const std::string & type, const int & to_id, const std::map<std::string, std::string> & properties)
+void GraphDb :: addArc  (const int & from_id, const std::string & type, const int & to_id, const std::map<std::string, std::set<std::string> > & properties)
 {
 	// Check from_node existence
 	if (_nodes.find(from_id) == _nodes.end()) {
@@ -893,6 +922,27 @@ std::set<Node *> GraphDb :: getNodesWithProperty (std::string prop_name, std::st
 		}
 	}
 	return nodes;
+}
+
+// Removes a node and the input and output arcs
+void GraphDb :: eraseNode (int node_id)
+{
+	if (_nodes.find(node_id) == _nodes.end()) {
+		Node & current_node = _nodes[node_id];
+		std::set<std::string> arc_to_remove;
+		for (std::set<Arc *>::const_iterator it = current_node.ArcIn().begin(); it != current_node.ArcIn().end(); it++) {
+			arc_to_remove.insert((*it)->unique_id());
+			_nodes[(*it)->fromNode()->unique_id()].eraseArcOut((*it)->unique_id());
+		}
+		for (std::set<Arc *>::const_iterator it = current_node.ArcOut().begin(); it != current_node.ArcOut().end(); it++) {
+			arc_to_remove.insert((*it)->unique_id());
+			_nodes[(*it)->toNode()->unique_id()].eraseArcIn((*it)->unique_id());
+		}
+		for (std::set<std::string>::iterator it = arc_to_remove.begin(); it != arc_to_remove.end(); it++) {
+			_arcs.erase(_arcs.find(*it));
+		}
+		_nodes.erase(_nodes.find(node_id));
+	}
 
 }
 
