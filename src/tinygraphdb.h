@@ -1,5 +1,5 @@
 /* 
- * Tinygraphdb version 1.2
+ * Tinygraphdb version 1.3
  *
  * Copyright (c) 2012-2013 Guillaume Collet
  *
