@@ -62,20 +62,20 @@ namespace tinygraphdb
 	private:
 		int _unique_id;
 		std::string _type;
-		std::map<std::string, std::string> _properties;
+		std::map<std::string, std::set<std::string> > _properties;
 		std::set<Arc *> _arc_in;
 		std::set<Arc *> _arc_out;
 
 	public:
 		// Constructor & destructor //
 		Node () {};
-		explicit Node (const int & unique_id, const std::string & type, const std::map<std::string, std::string> & properties):_unique_id(unique_id), _type(type), _properties(properties) {};
+		explicit Node (const int & unique_id, const std::string & type, const std::map<std::string, std::set<std::string> > & properties):_unique_id(unique_id), _type(type), _properties(properties) {};
 		~Node () {};
 
 		// Adders //
 		void addArcIn (Arc * in) {_arc_in.insert(in);};
 		void addArcOut (Arc * out) {_arc_out.insert(out);};
-		void addProperty (const std::string & property, const std::string & value) {_properties[property] = value;};
+		void addProperty (const std::string & property, const std::string & value) {_properties[property].insert(value);};
 		
 		// Eraser //
 		void eraseArcIn	(const std::string & arc_id);
@@ -84,8 +84,8 @@ namespace tinygraphdb
 		// Getters //
 		const int & unique_id () const;
 		const std::string & type () const;
-		const std::string & property (const std::string & property) const;
-		const std::map<std::string, std::string> & properties () const;
+		const std::set<std::string> & property (const std::string & property) const;
+		const std::map<std::string, std::set<std::string> >& properties () const;
 		const std::set<Arc *> & ArcIn () const;
 		const std::set<Arc *> & ArcOut () const;
 		
@@ -124,24 +124,24 @@ namespace tinygraphdb
 	private:
 		std::string _unique_id;
 		std::string _type;
-		std::map<std::string, std::string> _properties;
+		std::map<std::string, std::set<std::string> > _properties;
 		Node * _from_node;
 		Node * _to_node;
 		
 	public:
 		// Constructor & destructor //
 		Arc () {};
-		explicit Arc (const std::string & unique_id, const std::string & type, const std::map<std::string, std::string> & properties, Node * from, Node * to):_unique_id(unique_id), _type(type), _properties(properties), _from_node(from), _to_node(to) {};
+		explicit Arc (const std::string & unique_id, const std::string & type, const std::map<std::string, std::set<std::string> > & properties, Node * from, Node * to):_unique_id(unique_id), _type(type), _properties(properties), _from_node(from), _to_node(to) {};
 		~Arc () {};
 
 		// Adders //
-		void addProperty (const std::string & property, const std::string & value);
+		void addProperty (const std::string & property, const std::string & value) {_properties[property].insert(value);};
 		
 		// Getters //
 		const std::string & unique_id () const;
 		const std::string & type () const;
-		const std::string property (const std::string & property) const;
-		const std::map<std::string, std::string> & properties () const;
+		const std::set<std::string> & property (const std::string & property) const;
+		const std::map<std::string, std::set<std::string> > & properties () const;
 		Node * fromNode ();
 		Node * toNode ();
 		
@@ -207,9 +207,9 @@ namespace tinygraphdb
 		GraphDbInterface () {};
 		virtual ~GraphDbInterface () {};
 		
-		virtual int newNode (const std::string & type, const std::map<std::string, std::string> & properties) = 0;
-		virtual void newNodeWithId (const int & unique_id, const std::string & type, const std::map<std::string, std::string> & properties) = 0;
-		virtual void addArc  (const int & from_id, const std::string & type, const int & to_id, const std::map<std::string, std::string> & properties) = 0;
+		virtual int newNode (const std::string & type, const std::map<std::string, std::set<std::string> > & properties) = 0;
+		virtual void newNodeWithId (const int & unique_id, const std::string & type, const std::map<std::string, std::set<std::string> > & properties) = 0;
+		virtual void addArc  (const int & from_id, const std::string & type, const int & to_id, const std::map<std::string, std::set<std::string> >& properties) = 0;
 		
 		virtual Node * getNode (int node_id) = 0;
 		virtual std::set<Node *> getNodesOfType (std::string type) = 0;
@@ -254,9 +254,9 @@ namespace tinygraphdb
 		~GraphDb () {};
 		
 		// Adders //
-		int newNode (const std::string & type, const std::map<std::string, std::string> & properties);
-		void newNodeWithId (const int & unique_id, const std::string & type, const std::map<std::string, std::string> & properties);
-		void addArc  (const int & from_id, const std::string & type, const int & to_id, const std::map<std::string, std::string> & properties);
+		int newNode (const std::string & type, const std::map<std::string, std::set<std::string> > & properties);
+		void newNodeWithId (const int & unique_id, const std::string & type, const std::map<std::string, std::set<std::string> >& properties);
+		void addArc  (const int & from_id, const std::string & type, const int & to_id, const std::map<std::string, std::set<std::string> >& properties);
 		
 		// Getters //
 		std::set<Node *> allNodes ();
