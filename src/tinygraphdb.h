@@ -63,8 +63,7 @@ namespace tinygraphdb
 		int _unique_id;
 		std::string _type;
 		std::map<std::string, std::set<std::string> > _properties;
-		std::set<Arc *> _arc_in;
-		std::set<Arc *> _arc_out;
+		std::set<Arc *> _arcs;
 
 	public:
 		// Constructor & destructor //
@@ -73,28 +72,21 @@ namespace tinygraphdb
 		~Node () {};
 
 		// Adders //
-		void addArcIn (Arc * in) {_arc_in.insert(in);};
-		void addArcOut (Arc * out) {_arc_out.insert(out);};
+		void addArc (Arc * arc) {_arcs.insert(arc);};
 		void addProperty (const std::string & property, const std::string & value) {_properties[property].insert(value);};
 		
 		// Eraser //
-		void eraseArcIn	(const std::string & arc_id);
-		void eraseArcOut (const std::string & arc_id);
+		void eraseArc (const std::string & arc_id);
 		
 		// Getters //
 		const int & unique_id () const;
 		const std::string & type () const;
 		const std::set<std::string> & property (const std::string & property) const;
 		const std::map<std::string, std::set<std::string> >& properties () const;
-		const std::set<Arc *> & ArcIn () const;
-		const std::set<Arc *> & ArcOut () const;
+		const std::set<Arc *> & arcs () const {return _arcs;};
 		
-		std::set<Arc *> getArcInOfType(const std::string & type);
-		std::set<Arc *> getArcOutOfType(const std::string & type);
-		
+		std::set<Arc *> getArcOfType(const std::string & type);
 		std::set<Node *> getNodeFromArcOfType (std::string type);
-		std::set<Node *> getNodeFromArcOutOfType (std::string type);
-		std::set<Node *> getNodeFromArcInOfType (std::string type);
 		
 		// Checkers //
 		bool hasArcOfType (std::string type);
@@ -104,7 +96,6 @@ namespace tinygraphdb
 		
 		// Printers //
 		void print();
-		void printFull();
 		void print (std::ofstream & outfile);
 	};
 
@@ -241,6 +232,7 @@ namespace tinygraphdb
 		
 		std::map<std::string, std::set<int> > _node_types;
 		std::map<std::string, std::map<std::string, std::set<int> > > _props;
+		std::map<std::string, std::set<int> > _rev_props; // prop_value, set of nodes having the property
 		
 		// Private readers
 		void readNode (std::string line);
@@ -265,6 +257,8 @@ namespace tinygraphdb
 		
 		std::set<Node *> getNodesWithProperty (std::string prop_name);
 		std::set<Node *> getNodesWithProperty (std::string prop_name, std::string prop_value);
+		
+		std::set<Node *> getNodesWithPropertyValue (std::string prop_value);
 		
 		std::set<Node *> getNodesOfTypeWithProperty (std::string type, std::string prop_name);
 		std::set<Node *> getNodesOfTypeWithProperty (std::string type, std::string prop_name, std::string prop_value);
