@@ -77,6 +77,8 @@ namespace tinygraphdb
 		
 		// Eraser //
 		void eraseArc (const std::string & arc_id);
+		void eraseProperty (const std::string & property) {_properties.erase(property);};
+		void eraseProperty (const std::string & property, const std::string & value) {_properties[property].erase(_properties[property].find(value));};
 		
 		// Getters //
 		const int & unique_id () const;
