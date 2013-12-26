@@ -790,6 +790,17 @@ Node * GraphDb :: getNode (int node_id)
 	return &_nodes[node_id];
 }
 
+// Return a pointer to the arc with the given id
+Arc * GraphDb :: getArc (const std::string & arc_id)
+{
+	if (_arcs.find(arc_id) == _arcs.end()) {
+		std::stringstream error_message;
+		error_message << "Arc \'" << arc_id << "\' does not exist";
+		throw std::runtime_error(error_message.str());
+	}
+	return & _arcs[arc_id];
+}
+
 // Return the set of all nodes of the given type
 std::set<Node *> GraphDb :: getNodesOfType (std::string type)
 {

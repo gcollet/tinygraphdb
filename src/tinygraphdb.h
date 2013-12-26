@@ -255,6 +255,7 @@ namespace tinygraphdb
 		// Getters //
 		std::set<Node *> allNodes ();
 		Node * getNode (int node_id);
+		Arc * getArc (const std::string & arc_id);
 		std::set<Node *> getNodesOfType (std::string type);
 		
 		std::set<Node *> getNodesWithProperty (std::string prop_name);
