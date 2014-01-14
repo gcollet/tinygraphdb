@@ -1,5 +1,5 @@
 /*
- * Tinygraphdb version 1.2
+ * Tinygraphdb version 1.3
  *
  * Copyright (c) 2012-2013 Guillaume Collet
  *
@@ -194,57 +194,22 @@ const std::map<std::string, std::set<std::string> > & Node :: properties () cons
 }
 
 // Erase a given arc in
-void Node::eraseArcIn	(const std::string & arc_id)
+void Node::eraseArc	(const std::string & arc_id)
 {
-	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++) {
+	for (std::set<Arc *>::iterator it = _arcs.begin(); it != _arcs.end(); it++) {
 		if ((*it)->unique_id().compare(arc_id) == 0) {
-			_arc_in.erase(it);
+			_arcs.erase(it);
 			return;
 		}
 	}
 }
 
-// Erase a given arc out
-void Node::eraseArcOut (const std::string & arc_id)
-{
-	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++) {
-		if ((*it)->unique_id().compare(arc_id) == 0) {
-			_arc_out.erase(it);
-			return;
-		}
-	}
-}
-
-
-// Return the set of input arcs
-const std::set<Arc *> & Node :: ArcIn () const
-{
-	return _arc_in;
-}
-
-// Return the set of output arcs
-const std::set<Arc *> & Node :: ArcOut () const
-{
-	return _arc_out;
-}
 
 // Return the set of input arcs of the given type
-std::set<Arc *> Node :: getArcInOfType(const std::string & type)
+std::set<Arc *> Node :: getArcOfType(const std::string & type)
 {
 	std::set<Arc *> tmp_arcs;
-	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++) {
-		if ((*it)->type().compare(type) == 0){
-			tmp_arcs.insert((*it));
-		}
-	}
-	return tmp_arcs;
-}
-
-// Return the set of output arcs of the given type
-std::set<Arc *> Node :: getArcOutOfType(const std::string & type)
-{
-	std::set<Arc *> tmp_arcs;
-	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++) {
+	for (std::set<Arc *>::iterator it = _arcs.begin(); it != _arcs.end(); it++) {
 		if ((*it)->type().compare(type) == 0){
 			tmp_arcs.insert((*it));
 		}
@@ -256,42 +221,23 @@ std::set<Arc *> Node :: getArcOutOfType(const std::string & type)
 std::set<Node *> Node :: getNodeFromArcOfType (std::string type)
 {
 	std::set<Node *> out_node;
-	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++)
-		if ((*it)->type().compare(type) == 0)
-			out_node.insert((*it)->fromNode());
-	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++)
-		if ((*it)->type().compare(type) == 0)
-			out_node.insert((*it)->toNode());
+	for (std::set<Arc *>::iterator it = _arcs.begin(); it != _arcs.end(); it++){
+		if ((*it)->type().compare(type) == 0){
+			if ((*it)->fromNode() == this) {
+				out_node.insert((*it)->toNode());
+			} else {
+				out_node.insert((*it)->fromNode());
+			}
+		}
+	}
 	return out_node;
 }
 
-// Return the set of nodes at the end of output arcs of the given type
-std::set<Node *> Node :: getNodeFromArcOutOfType (std::string type)
-{
-	std::set<Node *> out_node;
-	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++)
-		if ((*it)->type().compare(type) == 0)
-			out_node.insert((*it)->toNode());
-	return out_node;
-}
-
-// Return the set of nodes at the end of input arcs of the given type
-std::set<Node *> Node :: getNodeFromArcInOfType (std::string type)
-{
-	std::set<Node *> out_node;
-	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++)
-		if ((*it)->type().compare(type) == 0)
-			out_node.insert((*it)->fromNode());
-	return out_node;
-}
 
 // Check the existence of an arc of the given type
 bool Node :: hasArcOfType (std::string type)
 {
-	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++)
-		if ((*it)->type().compare(type) == 0)
-			return true;
-	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++)
+	for (std::set<Arc *>::iterator it = _arcs.begin(); it != _arcs.end(); it++)
 		if ((*it)->type().compare(type) == 0)
 			return true;
 	return false;
@@ -300,13 +246,13 @@ bool Node :: hasArcOfType (std::string type)
 // Check the existence of an arc of the given type from the current node to the given node
 bool Node :: hasArcOfTypeToNode (std::string type, Node * node)
 {
-	for (std::set<Arc *>::iterator it = _arc_in.begin(); it != _arc_in.end(); it++)
-		if ((*it)->type().compare(type) == 0)
-			if ((*it)->toNode() == node)
+	for (std::set<Arc *>::iterator it = _arcs.begin(); it != _arcs.end(); it++){
+		if ((*it)->type().compare(type) == 0){
+			if ((*it)->toNode() == node || (*it)->fromNode() == node) {
 				return true;
-	for (std::set<Arc *>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++)
-		if ((*it)->type().compare(type) == 0)
-			return true;
+			}
+		}
+	}
 	return false;
 }
 
@@ -335,16 +281,6 @@ void Node :: print()
 		}
 	}
 	std::cout << "\n";
-}
-
-// Print the node + the output arcs on stdout
-void Node :: printFull()
-{
-	print();
-	for (std::set<Arc*>::iterator it = _arc_out.begin(); it != _arc_out.end(); it++) {
-		std::cout << "-[" << (*it)->type() << "]->";
-		(*it)->toNode()->print();
-	}
 }
 
 // Print the node on the given stream
@@ -773,6 +709,7 @@ int GraphDb :: newNode (const std::string & type, const std::map<std::string, st
 	for (std::map<std::string, std::set<std::string> >::const_iterator it_name = properties.begin(); it_name != properties.end(); it_name++) {
 		for (std::set<std::string>::iterator it_value = it_name->second.begin(); it_value != it_name->second.end(); it_value++) {
 			_props[it_name->first][*it_value].insert(unique_id);
+			_rev_props[*it_value].insert(unique_id);
 		}
 	}
 	return unique_id;
@@ -792,6 +729,7 @@ void GraphDb :: newNodeWithId(const int & unique_id, const std::string & type, c
 		for (std::map<std::string, std::set<std::string> >::const_iterator it_name = properties.begin(); it_name != properties.end(); it_name++) {
 			for (std::set<std::string>::iterator it_value = it_name->second.begin(); it_value != it_name->second.end(); it_value++) {
 				_props[it_name->first][*it_value].insert(unique_id);
+				_rev_props[*it_value].insert(unique_id);
 			}
 		}
 	}
@@ -828,8 +766,8 @@ void GraphDb :: addArc  (const int & from_id, const std::string & type, const in
 	unique_id << from_id << type << to_id;
 	if (_arcs.find(unique_id.str()) == _arcs.end()) {
 		_arcs[unique_id.str()] = Arc(unique_id.str(), type, properties, node_from, node_to);
-		node_from->addArcOut (&_arcs[unique_id.str()]);
-		node_to->addArcIn (&_arcs[unique_id.str()]);
+		node_from->addArc (&_arcs[unique_id.str()]);
+		node_to->addArc (&_arcs[unique_id.str()]);
 	}
 }
 
@@ -850,6 +788,17 @@ Node * GraphDb :: getNode (int node_id)
 		return NULL;
 	}
 	return &_nodes[node_id];
+}
+
+// Return a pointer to the arc with the given id
+Arc * GraphDb :: getArc (const std::string & arc_id)
+{
+	if (_arcs.find(arc_id) == _arcs.end()) {
+		std::stringstream error_message;
+		error_message << "Arc \'" << arc_id << "\' does not exist";
+		throw std::runtime_error(error_message.str());
+	}
+	return & _arcs[arc_id];
 }
 
 // Return the set of all nodes of the given type
@@ -875,6 +824,17 @@ std::set<Node *> GraphDb :: getNodesOfTypeWithProperty (std::string type, std::s
 			if (_nodes[*it].hasProp(prop_name)) {
 				nodes.insert(&_nodes[*it]);
 			}
+		}
+	}
+	return nodes;
+}
+
+std::set<Node *>  GraphDb :: getNodesWithPropertyValue (std::string prop_value)
+{
+	std::set<Node *> nodes;
+	if (_rev_props.find(prop_value) != _rev_props.end()) {
+		for (std::set<int>::iterator it = _rev_props[prop_value].begin(); it != _rev_props[prop_value].end(); it++) {
+			nodes.insert(&_nodes[*it]);
 		}
 	}
 	return nodes;
@@ -930,13 +890,9 @@ void GraphDb :: eraseNode (int node_id)
 	if (_nodes.find(node_id) == _nodes.end()) {
 		Node & current_node = _nodes[node_id];
 		std::set<std::string> arc_to_remove;
-		for (std::set<Arc *>::const_iterator it = current_node.ArcIn().begin(); it != current_node.ArcIn().end(); it++) {
+		for (std::set<Arc *>::const_iterator it = current_node.arcs().begin(); it != current_node.arcs().end(); it++) {
 			arc_to_remove.insert((*it)->unique_id());
-			_nodes[(*it)->fromNode()->unique_id()].eraseArcOut((*it)->unique_id());
-		}
-		for (std::set<Arc *>::const_iterator it = current_node.ArcOut().begin(); it != current_node.ArcOut().end(); it++) {
-			arc_to_remove.insert((*it)->unique_id());
-			_nodes[(*it)->toNode()->unique_id()].eraseArcIn((*it)->unique_id());
+			_nodes[(*it)->fromNode()->unique_id()].eraseArc((*it)->unique_id());
 		}
 		for (std::set<std::string>::iterator it = arc_to_remove.begin(); it != arc_to_remove.end(); it++) {
 			_arcs.erase(_arcs.find(*it));
