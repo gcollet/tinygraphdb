@@ -55,7 +55,7 @@ namespace tinygraphdb
 	 * _type       : A node has a type which will be used to check policy
 	 * _properties : A node has properties (pairs of strings: name and value)
 	 *               Each property name is unique for a given node
-	 * _arc_in(out): A node has a set of output arcs and a set of input arcs
+	 * _arcs       : A node has a set of output arcs and a set of input arcs
 	 *******************************************************************************/
 	class Node
 	{
